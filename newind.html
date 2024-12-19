@@ -1,0 +1,464 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Vedant Singh</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #87ceeb;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        nav {
+            margin: 20px 0;
+        }
+
+        nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-switch" onclick="toggleTheme()">🌓</div>
+    
+    <div class="container">
+        <nav>
+            <a href="#" onclick="showContent('home')">Home</a>
+            <a href="#" onclick="showContent('work')">Work</a>
+            <a href="#" onclick="showContent('fun')">Fun</a>
+        </nav>
+
+        <div id="home" class="content active">
+            <h1>Vedant Singh</h1>
+            <p>Hi! I'm a Computer Science student at Stanford University, passionate about artificial intelligence and technology innovation. I love exploring new technologies and solving real-world problems through computation.</p>
+        </div>
+
+        <div id="work" class="content">
+            <h2>Research & Projects</h2>
+            <ul>
+                <li>Bengali Automatic Speech Recognition Tool Development</li>
+                <li>Machine Learning Research</li>
+                <li>Natural Language Processing Projects</li>
+                <li>Brain-Computer Interface Studies</li>
+            </ul>
+        </div>
+
+        <div id="fun" class="content">
+            <h2>Fun Facts About Me</h2>
+            <ul>
+                <li>Technology enthusiast</li>
+                <li>Always eager to learn new things</li>
+                <li>Interested in numbers and data</li>
+                <li>Rising sophomore at Stanford</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
+        }
+
+        function showContent(section) {
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(section).classList.add('active');
+        }
+    </script>
+</body>
+</html>
+<style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    /* Updated styles */
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-section {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        margin: 40px 0;
+    }
+
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--text-color);
+        box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
+    }
+
+    #home {
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    #home h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        background: linear-gradient(45deg, #87ceeb, #4a90e2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 600;
+    }
+
+    #home p {
+        font-size: 1.1em;
+        line-height: 1.6;
+        max-width: 600px;
+        margin: 0 auto;
+        font-weight: 300;
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        background-color: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        border-top: 1px solid var(--text-color);
+    }
+
+    .social-icon {
+        width: 24px;
+        height: 24px;
+        transition: transform 0.3s ease;
+    }
+
+    .social-icon:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<!-- Update the home content div -->
+<script>
+    document.getElementById('home').innerHTML = `
+        <div class="profile-section">
+            <img src="images/IMG_0006.jpeg" alt="Vedant Singh" class="profile-image">
+            <div>
+                <h1>Vedant Singh</h1>
+                <p>Hi! I'm a Computer Science student at Stanford University, passionate about artificial intelligence and technology innovation. I love exploring new technologies and solving real-world problems through computation.</p>
+            </div>
+        </div>
+    `;
+
+    // Create footer
+    const footer = document.createElement('div');
+    footer.className = 'footer';
+    footer.innerHTML = `
+        <a href="mailto:vedants@stanford.edu" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/552/552486.png" alt="Email" class="social-icon">
+        </a>
+        <a href="https://www.linkedin.com/in/thevedantsingh/" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="LinkedIn" class="social-icon">
+        </a>
+        <a href="https://github.com/thevedants" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733553.png" alt="GitHub" class="social-icon">
+        </a>
+        <a href="https://x.com/thevedants1" target="_blank">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" class="social-icon">
+        </a>
+    `;
+    document.body.appendChild(footer);
+</script>
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .profile-section {
+        animation: fadeInUp 1s ease-out;
+    }
+
+    .profile-section h1 {
+        font-size: 3.5em;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, var(--text-color), #4a90e2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: fadeInUp 1s ease-out 0.3s backwards;
+    }
+
+    .profile-section p {
+        font-size: 1.1em;
+        line-height: 1.6;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.6s forwards;
+    }
+
+    /* Update the existing profile section styles */
+    .profile-section {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        padding: 40px 20px;
+    }
+
+    .profile-image {
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        animation: fadeInUp 1s ease-out;
+    }
+</style>
+
+<script>
+    // Update the profile section content with the new styling
+    document.getElementById('home').innerHTML = `
+        <div class="profile-section">
+            <img src="images/IMG_0006.jpeg" alt="Vedant Singh" class="profile-image">
+            <div>
+                <h1>Hi, I'm Vedant Singh</h1>
+                <p>As a sophomore at Stanford University, I'm drawn to the intersection of numbers, data, and computation. I enjoy exploring how technology can solve interesting problems, and I'm always eager to learn something new. Feel free to look around to see what I've been working on and do not hesitate to reach out if you find something fun!</p>
+            </div>
+        </div>
+    `;
+</script>
+<script>
+    // Update the work section content with image and text layout
+    document.getElementById('work').innerHTML = `
+        <div class="profile-section">
+            <img src="images/IMG_1718.jpeg" alt="Work" class="profile-image">
+            <div>
+                <h2>Research & Projects</h2>
+                <p>At Stanford, I'm currently working on legal AI development at the Legal Design Lab and researching LLM applications in finance at the Advanced Financial Technology Lab. I also engineered new-age gaming solutions at a stealth startup developing an AI-powered visual novel platform. Previously at Stanford's CS Department, I worked on brain-computer interfaces and mathematically strong reasoning LLMs, while my time at Bengali.ai focused on speech recognition systems. Earlier at MIT's Probabilistic Computing Project, I worked on natural language translation models.</p>
+                <p> My coursework spans both technical and theoretical domains, reflecting my interest in understanding both the mathematical principles behind computation and their real-world implementations. Beyond academics, I'm actively involved in Stanford's tech and entrepreneurship community through organizations like ACM and the Blockchain Club, where I engage with fellow students passionate about technology. I also participate in competitive programming through ICPC and help organize the Stanford Math Tournament, allowing me to apply my skills while giving back to the community.</p>
+            </div>
+        </div>
+    `;
+</script>
+<script>
+    // Update the fun section content with grid of images and text layout
+    document.getElementById('fun').innerHTML = `
+        <div class="profile-section">
+            <div class="fun-image-grid">
+                <img src="images/IMG_2659.jpeg" alt="Fun 1" class="fun-image">
+                <img src="images/IMG_2899.jpeg" alt="Fun 2" class="fun-image">
+                <img src="images/IMG_3871.jpeg" alt="Fun 3" class="fun-image">
+                <img src="images/IMG_5282.jpeg" alt="Fun 4" class="fun-image">
+            </div>
+            <div>
+                <h2>Fun</h2>
+                <p>When I'm not neck-deep in code or tinkering with AI models, you'll probably find me with my nose in a book, swinging a badminton racket, or geeking out over sports stats. I'm a total bookworm – my reading list is as eclectic as my Spotify playlists, jumping from sci-fi mind-benders to historical deep dives (The Count of Monte Cristo being a personal favorite). My passion for sports analytics has evolved into something more than just a hobby, leading me to develop Trader's Court, a tennis match prediction system that combines deep learning with real-time analysis. This love for competition and strategy extends to the poker table, where I recently won at the Stanford-Berkeley Poker Tournament. The game's blend of probability, psychology, and decision-making fascinated me so much that I created PokerGenius, an AI-powered poker strategy tool, combining my technical skills with my passion for competitive gaming. Would love to play heads up sometime!</p>
+            </div>
+        </div>
+    `;
+</script>
+<style>
+    .fun-image-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        width: 200px;
+        height: 200px;
+    }
+
+    .fun-image {
+        width: 95px;
+        height: 95px;
+        object-fit: cover;
+        border-radius: 10px;
+        animation: fadeInUp 1s ease-out;
+    }
+</style>
+
+<link rel="manifest" href="site.webmanifest">
+<style>
+    /* Add decorative circles */
+    .circle {
+        position: fixed;
+        border-radius: 50%;
+        background: rgba(135, 206, 235, 0.08);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* Left side circles */
+    .circle-left-1 {
+        width: 300px;
+        height: 300px;
+        left: 50px;
+        top: 15%;
+    }
+
+    .circle-left-2 {
+        width: 180px;
+        height: 180px;
+        left: -80px;
+        top: 45%;
+    }
+
+    .circle-left-3 {
+        width: 220px;
+        height: 220px;
+        left: 120px;
+        top: 75%;
+    }
+
+    /* Right side circles */
+    .circle-right-1 {
+        width: 250px;
+        height: 250px;
+        right: -100px;
+        top: 25%;
+    }
+
+    .circle-right-2 {
+        width: 200px;
+        height: 200px;
+        right: 80px;
+        top: 55%;
+    }
+
+    .circle-right-3 {
+        width: 160px;
+        height: 160px;
+        right: -60px;
+        top: 80%;
+    }
+
+    /* Add subtle animation to circles */
+    @keyframes float {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+
+    .circle {
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .circle:nth-child(odd) {
+        animation-delay: -4s;
+    }
+</style>
+
+<script>
+    // Add circles to the DOM
+    const circles = `
+        <div class="circle circle-left-1"></div>
+        <div class="circle circle-left-2"></div>
+        <div class="circle circle-left-3"></div>
+        <div class="circle circle-right-1"></div>
+        <div class="circle circle-right-2"></div>
+        <div class="circle circle-right-3"></div>
+    `;
+    document.body.insertAdjacentHTML('afterbegin', circles);
+</script>
+
+<style>
+    .logo {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+</style>
+
+<div class="logo">
+    <img src="images/vs logo black.jpg" alt="Logo">
+</div>
+
+
+<style>
+    /* Update Twitter/X icon */
+    .footer a[href*="x.com"] img {
+        content: url('https://cdn-icons-png.flaticon.com/512/5969/5969020.png');
+    }
+</style>
+<link rel="icon" type="image/png" href="images/vs logo black.jpg">
+<link rel="shortcut icon" type="image/png" href="images/vs logo black.jpg">
+
+
+<script>
+    // Check if dark mode is enabled and update logo accordingly
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector('.logo img').src = "images/vs logo black.jpg";
+    }
+
+    // Listen for changes in color scheme
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        document.querySelector('.logo img').src = e.matches 
+            ? "images/vs logo black.jpg"
+            : "images/vs logo black.jpg";
+    });
+</script>
+
+<script>
+    // Update logo based on initial color scheme
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        document.querySelector('.logo img').src = "images/vs logo black.jpg";
+    }
+
+    // Listen for changes to light mode
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+        if (e.matches) {
+            document.querySelector('.logo img').src = "images/vs logo black.jpg";
+        }
+    });
+</script>
+
+
