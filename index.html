@@ -1,465 +1,1367 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Vedant Singh</title>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedant Singh</title>
+    <meta name="description" content="Vedant Singh — CS & Math at Stanford. Building at the intersection of AI, language, and computation.">
+    <link rel="icon" type="image/png" href="./images/vs logo black.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
         :root {
-            --bg-color: #ffffff;
-            --text-color: #87ceeb;
+            --bg: #0a0a0a;
+            --text: #ededed;
+            --text-dim: #777;
+            --accent: #91f9e5;
+            --accent-dim: rgba(145, 249, 229, 0.08);
+            --border: rgba(255, 255, 255, 0.07);
+            --card: rgba(255, 255, 255, 0.025);
+            --radius: 10px;
         }
 
-        [data-theme="dark"] {
-            --bg-color: #000000;
-            --text-color: #ffffff;
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) transparent;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            transition: all 0.3s ease;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        ::selection {
+            background: var(--accent);
+            color: var(--bg);
         }
 
-        nav {
-            margin: 20px 0;
+        a { color: inherit; text-decoration: none; }
+        img { display: block; max-width: 100%; }
+
+        /* ===== CUSTOM CURSOR ===== */
+        @media (pointer: fine) {
+            body { cursor: none; }
+            a, button, [onclick] { cursor: none; }
         }
+
+        .cursor-ring {
+            position: fixed;
+            width: 36px;
+            height: 36px;
+            border: 1.5px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+                        width 0.3s ease, height 0.3s ease,
+                        opacity 0.2s ease;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        .cursor-dot {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-ring.hovering {
+            width: 60px;
+            height: 60px;
+            border-color: var(--accent);
+            opacity: 0.5;
+        }
+
+        @media (pointer: coarse) {
+            .cursor-ring, .cursor-dot { display: none; }
+        }
+
+        /* ===== SCROLL PROGRESS ===== */
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--accent);
+            z-index: 1000;
+            width: 0%;
+            will-change: width;
+        }
+
+        /* ===== GRAIN TEXTURE ===== */
+        .grain {
+            position: fixed;
+            inset: -100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.5;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 500;
+            padding: 28px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            mix-blend-mode: difference;
+        }
+
+        .logo-mark {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            letter-spacing: -0.03em;
+        }
+
+        nav { display: flex; gap: 36px; }
 
         nav a {
-            color: var(--text-color);
-            text-decoration: none;
-            margin-right: 20px;
+            color: #fff;
+            font-size: 0.78rem;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            position: relative;
+            padding-bottom: 2px;
         }
 
-        .theme-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #fff;
+            transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .content {
-            display: none;
+        nav a:hover::after { width: 100%; }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 100vh;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 48px;
+            position: relative;
         }
 
-        .active {
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.5s forwards;
+        }
+
+        .hero-badge .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .hero-heading {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3.2rem, 9.5vw, 8.5rem);
+            font-weight: 700;
+            line-height: 0.92;
+            letter-spacing: -0.045em;
+            margin-bottom: 36px;
+        }
+
+        .hero-heading .line {
             display: block;
+            overflow: hidden;
+        }
+
+        .hero-heading .line-inner {
+            display: inline-block;
+            transform: translateY(115%);
+            animation: revealUp 1.1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+        }
+
+        .hero-heading .line:nth-child(2) .line-inner { animation-delay: 0.12s; }
+        .hero-heading .line:nth-child(3) .line-inner { animation-delay: 0.24s; }
+
+        .hero-heading .accent { color: var(--accent); }
+        .hero-heading em { font-style: italic; }
+
+        @keyframes revealUp {
+            to { transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-sub {
+            font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+            color: var(--text-dim);
+            max-width: 540px;
+            font-weight: 300;
+            line-height: 1.75;
+            opacity: 0;
+            animation: fadeUp 0.9s ease 0.7s forwards;
+        }
+
+        .hero-scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 48px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--text-dim);
+            opacity: 0;
+            animation: fadeUp 0.8s ease 1.2s forwards;
+        }
+
+        .scroll-track {
+            width: 48px;
+            height: 1px;
+            background: var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-track::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            animation: trackSlide 2.2s ease-in-out infinite;
+        }
+
+        @keyframes trackSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ===== MARQUEE ===== */
+        .marquee-strip {
+            padding: 40px 0;
+            overflow: hidden;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .marquee-track {
+            display: flex;
+            gap: 48px;
+            animation: marqueeScroll 25s linear infinite;
+            width: max-content;
+        }
+
+        .marquee-track span {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 3.2rem);
+            font-weight: 700;
+            white-space: nowrap;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+            letter-spacing: -0.02em;
+        }
+
+        .marquee-track span.filled {
+            color: var(--text);
+            -webkit-text-stroke: none;
+        }
+
+        .marquee-track span.accent-fill {
+            color: var(--accent);
+            -webkit-text-stroke: none;
+        }
+
+        @keyframes marqueeScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ===== SECTIONS (SHARED) ===== */
+        section {
+            padding: 140px 48px;
+            position: relative;
+        }
+
+        .section-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            margin-bottom: 48px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .section-label::before {
+            content: '';
+            width: 36px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .section-heading {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 4.5vw, 3.8rem);
+            font-weight: 700;
+            letter-spacing: -0.035em;
+            line-height: 1.08;
+            margin-bottom: 56px;
+        }
+
+        /* ===== ABOUT ===== */
+        .about-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .about-img-wrap {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: var(--card);
+            min-height: 300px;
+        }
+
+        .about-img-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            pointer-events: none;
+        }
+
+        .about-img-wrap img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .about-img-wrap:hover img {
+            transform: scale(1.04);
+        }
+
+        .about-body p {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.85;
+            margin-bottom: 20px;
+        }
+
+        .about-body p:last-child { margin-bottom: 0; }
+
+        .about-body strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .about-body a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-decoration-color: rgba(145, 249, 229, 0.3);
+            text-underline-offset: 3px;
+            transition: text-decoration-color 0.3s ease;
+        }
+
+        .about-body a:hover {
+            text-decoration-color: var(--accent);
+        }
+
+        /* ===== EXPERIENCE ===== */
+        .exp-list { border-top: 1px solid var(--border); }
+
+        .exp-item {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 40px;
+            padding: 36px 0;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.35s ease;
+        }
+
+        .exp-item:hover { padding-left: 16px; }
+
+        a.exp-item { text-decoration: none; color: inherit; }
+
+        .exp-where {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-dim);
+            padding-top: 4px;
+        }
+
+        .exp-what h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .exp-item:hover .exp-what h3 { color: var(--accent); }
+
+        .exp-what p {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.65;
+            max-width: 560px;
+        }
+
+        /* ===== PROJECTS ===== */
+        .project-list { border-top: 1px solid var(--border); }
+
+        .project-row {
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            gap: 28px;
+            align-items: center;
+            padding: 36px 0;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.35s ease;
+        }
+
+        a.project-row:hover { padding-left: 20px; }
+        a.project-row:hover .proj-name { color: var(--accent); }
+        a.project-row:hover .proj-arrow { transform: translate(6px, -6px); }
+
+        .proj-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .proj-info { display: flex; flex-direction: column; gap: 4px; }
+
+        .proj-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.25rem, 2.5vw, 1.85rem);
+            font-weight: 600;
+            transition: color 0.3s ease;
+            letter-spacing: -0.02em;
+        }
+
+        .proj-desc {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            max-width: 520px;
+            line-height: 1.5;
+        }
+
+        .proj-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+
+        .proj-tag {
+            font-size: 0.65rem;
+            padding: 3px 10px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .proj-arrow {
+            font-size: 1.3rem;
+            color: var(--text-dim);
+            transition: transform 0.3s ease;
+        }
+
+        /* ===== HONORS (uses exp-list styles) ===== */
+
+        /* ===== FUN / GALLERY ===== */
+        .fun-intro {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            line-height: 1.85;
+            max-width: 680px;
+            margin-bottom: 56px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .gallery-cell {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius);
+            aspect-ratio: 1;
+            background: var(--card);
+            min-height: 150px;
+        }
+
+        .gallery-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .gallery-cell:hover img {
+            transform: scale(1.08);
+        }
+
+        .gallery-cell.wide {
+            grid-column: span 2;
+            aspect-ratio: 2/1;
+        }
+
+        .gallery-three {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* ===== NOTEBOOK ===== */
+        .notebook-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .notebook-sub {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            margin-bottom: 28px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Books */
+        .book-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .book-card {
+            display: flex;
+            align-items: stretch;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.35s ease;
+        }
+
+        .book-card:first-child { border-top: 1px solid var(--border); }
+
+        .book-card:hover { padding-left: 12px; }
+        .book-card:hover .book-spine { background: var(--accent); }
+
+        .book-spine {
+            width: 3px;
+            min-height: 100%;
+            background: var(--border);
+            border-radius: 2px;
+            flex-shrink: 0;
+            transition: background 0.35s ease;
+        }
+
+        .book-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .book-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text);
+            transition: color 0.3s ease;
+        }
+
+        .book-card:hover .book-title { color: var(--accent); }
+
+        .book-author {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        .book-note {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin-top: 4px;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        /* Thoughts */
+        .thought-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .thought-card {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+        }
+
+        .thought-card:first-child { border-top: 1px solid var(--border); }
+
+        .thought-card::before {
+            content: '\201C';
+            font-family: 'Space Grotesk', serif;
+            font-size: 2.5rem;
+            color: var(--accent);
+            line-height: 1;
+            opacity: 0.4;
+            display: block;
+            margin-bottom: -4px;
+        }
+
+        .thought-card p {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            font-style: italic;
+        }
+
+        .thought-card cite {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-style: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: 8px;
+        }
+
+        .thought-card .thought-gloss {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            opacity: 0.6;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 100px 48px 48px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 64px;
+            margin-bottom: 80px;
+        }
+
+        .footer-headline {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 3.5vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+        }
+
+        .footer-headline a {
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+        }
+
+        .footer-headline a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .footer-headline a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .footer-col h4 {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 0.92rem;
+            margin-bottom: 12px;
+            color: var(--text);
+            transition: color 0.3s ease;
+        }
+
+        .footer-col a:hover { color: var(--accent); }
+
+        .footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 28px;
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* ===== REVEAL ANIMATION ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(36px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Fallback: if JS hasn't kicked in after 2s, show everything */
+        @keyframes revealFallback {
+            to { opacity: 1; transform: none; }
+        }
+        .reveal {
+            animation: revealFallback 0s 2s forwards;
+        }
+        .reveal.visible {
+            animation: none;
+        }
+
+        .reveal-d1 { transition-delay: 0.08s; }
+        .reveal-d2 { transition-delay: 0.16s; }
+        .reveal-d3 { transition-delay: 0.24s; }
+        .reveal-d4 { transition-delay: 0.32s; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            section { padding: 100px 32px; }
+            header { padding: 24px 32px; }
+            .hero { padding: 0 32px; }
+            .about-layout { grid-template-columns: 1fr; gap: 48px; }
+            .exp-item { grid-template-columns: 1fr; gap: 8px; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .gallery-three { grid-template-columns: repeat(2, 1fr); }
+            .gallery-cell.wide { grid-column: span 1; aspect-ratio: 1; }
+            .notebook-grid { grid-template-columns: 1fr; gap: 56px; }
+            .footer-top { grid-template-columns: 1fr; gap: 48px; }
+        }
+
+        @media (max-width: 640px) {
+            section { padding: 80px 20px; }
+            header { padding: 18px 20px; }
+            nav { gap: 20px; }
+            nav a { font-size: 0.7rem; }
+            .hero { padding: 0 20px; }
+            .hero-scroll-hint { left: 20px; bottom: 28px; }
+            .project-row { grid-template-columns: 1fr; gap: 8px; }
+            .proj-num { display: none; }
+            .proj-arrow { display: none; }
+            .gallery-three { grid-template-columns: 1fr; }
+            footer { padding: 64px 20px 32px; }
         }
     </style>
 </head>
 <body>
-    <div class="theme-switch" onclick="toggleTheme()">🌓</div>
-    
-    <div class="container">
+
+    <!-- Cursor -->
+    <div class="cursor-ring"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- Scroll Progress -->
+    <div class="progress"></div>
+
+    <!-- Grain overlay -->
+    <div class="grain"></div>
+
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo-mark">VS.</a>
         <nav>
-            <a href="#" onclick="showContent('home')">Home</a>
-            <a href="#" onclick="showContent('work')">Work</a>
-            <a href="#" onclick="showContent('fun')">Fun</a>
+            <a href="#about">About</a>
+            <a href="#honors">Honors</a>
+            <a href="#work">Work</a>
+            <a href="#projects">Projects</a>
+            <a href="#fun">Fun</a>
+            <a href="#notebook">Notebook</a>
         </nav>
+    </header>
 
-        <div id="home" class="content active">
-            <h1>Vedant Singh</h1>
-            <p>Hi! I'm a Computer Science student at Stanford University, passionate about artificial intelligence and technology innovation. I love exploring new technologies and solving real-world problems through computation.</p>
+    <!-- Hero -->
+    <section class="hero" id="top">
+        <div class="hero-badge">
+            <span class="dot"></span>
+            Stanford University &mdash; CS & Mathematics
         </div>
-
-        <div id="work" class="content">
-            <h2>Research & Projects</h2>
-            <ul>
-                <li>Bengali Automatic Speech Recognition Tool Development</li>
-                <li>Machine Learning Research</li>
-                <li>Natural Language Processing Projects</li>
-                <li>Brain-Computer Interface Studies</li>
-            </ul>
+        <h1 class="hero-heading">
+            <span class="line"><span class="line-inner">Vedant</span></span>
+            <span class="line"><span class="line-inner"><em>Singh</em><span class="accent">.</span></span></span>
+        </h1>
+        <p class="hero-sub">Currently building <a href="https://usesalus.ai" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Salus</a> (YC W26) &mdash; making AI agents reliable. Stanford CS & Math. Always exploring how technology can solve interesting problems.</p>
+        <div class="hero-scroll-hint">
+            <span class="scroll-track"></span>
+            Scroll to explore
         </div>
+    </section>
 
-        <div id="fun" class="content">
-            <h2>Fun Facts About Me</h2>
-            <ul>
-                <li>Technology enthusiast</li>
-                <li>Always eager to learn new things</li>
-                <li>Interested in numbers and data</li>
-                <li>Rising junior at Stanford</li>
-            </ul>
+    <!-- Marquee -->
+    <div class="marquee-strip" aria-hidden="true">
+        <div class="marquee-track">
+            <span>Machine Learning</span>
+            <span class="filled">NLP</span>
+            <span>Brain-Computer Interfaces</span>
+            <span class="accent-fill">Linguistics</span>
+            <span>LLM Reasoning</span>
+            <span class="filled">Computer Vision</span>
+            <span class="accent-fill">Agent Reliability</span>
+            <span>Poker &amp; Strategy</span>
+            <span class="filled">Salus &mdash; YC W26</span>
+            <!-- duplicate for seamless loop -->
+            <span>Machine Learning</span>
+            <span class="filled">NLP</span>
+            <span>Brain-Computer Interfaces</span>
+            <span class="accent-fill">Linguistics</span>
+            <span>LLM Reasoning</span>
+            <span class="filled">Computer Vision</span>
+            <span class="accent-fill">Agent Reliability</span>
+            <span>Poker &amp; Strategy</span>
+            <span class="filled">Salus &mdash; YC W26</span>
         </div>
     </div>
 
+    <!-- About -->
+    <section id="about">
+        <div class="section-label reveal">01 &mdash; About</div>
+        <div class="about-layout">
+            <div class="about-img-wrap">
+                <img src="./images/IMG_0006.jpeg" alt="Vedant Singh" loading="eager">
+            </div>
+            <div class="about-body">
+                <h2 class="section-heading reveal">A bit <br>about me<span class="accent">.</span></h2>
+                <p class="reveal reveal-d1">I'm a junior at <strong>Stanford University</strong> studying <strong>Mathematics</strong> and <strong>Computer Science</strong>, drawn to the intersection of numbers, data, and computation. Currently building <a href="https://usesalus.ai" target="_blank"><strong>Salus</strong></a> (<strong>YC W26</strong>), a startup focused on agent reliability &mdash; making sure AI agents actually do what they're supposed to.</p>
+                <p class="reveal reveal-d2">My interests span <strong>artificial intelligence</strong>, <strong>natural language processing</strong>, <strong>computational linguistics</strong>, and <strong>financial technology</strong>. I had the honor of representing India at the <a href="https://ioling.org/results/2021/" target="_blank">International Linguistics Olympiad</a> and earned recognition as a <a href="https://www.risefortheworld.org/winners/vedant-singh" target="_blank">Rise Global Winner</a> by Schmidt Futures for building a gamified app to preserve the Sanskrit language.</p>
+                <p class="reveal reveal-d3">Beyond academics, I'm involved in Stanford's tech community through <strong>ACM</strong> and the <strong>Blockchain Club</strong>, compete in <strong>ICPC</strong>, and help organize the <strong>Stanford Math Tournament</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Honors & Recognition -->
+    <section id="honors">
+        <div class="section-label reveal">02 &mdash; Honors</div>
+        <h2 class="section-heading reveal">Recognition<span class="accent">.</span></h2>
+
+        <div class="exp-list">
+            <div class="exp-item reveal">
+                <div class="exp-where">YC W26</div>
+                <div class="exp-what">
+                    <h3>Salus &mdash; Y Combinator Winter 2026</h3>
+                    <p>Building <a href="https://usesalus.ai" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Salus</a>, a startup focused on agent reliability &mdash; making AI agents do what they're actually supposed to.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">IOL 2021</div>
+                <div class="exp-what">
+                    <h3>International Linguistics Olympiad &mdash; Bronze Medal</h3>
+                    <p>Represented India at the <a href="https://ioling.org/results/2021/" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">International Linguistics Olympiad</a> and won a bronze medal, competing against the world's best in solving problems from unfamiliar languages and writing systems.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">APLO</div>
+                <div class="exp-what">
+                    <h3>Asia Pacific Linguistics Olympiad &mdash; 2 Silver Medals</h3>
+                    <p>Earned two silver medals at the <a href="https://aplo.asia/" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Asia Pacific Linguistics Olympiad</a> across multiple years of competition.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">RSI 2021</div>
+                <div class="exp-what">
+                    <h3>Research Science Institute Scholar</h3>
+                    <p>Selected as an <a href="https://www.cee.org/programs/research-science-institute" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">RSI Scholar</a> at MIT, one of the most prestigious and selective STEM summer programs for high school students worldwide.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">Schmidt Futures</div>
+                <div class="exp-what">
+                    <h3>Rise Global Winner</h3>
+                    <p>Selected as a <a href="https://www.risefortheworld.org/winners/vedant-singh" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Rise Global Winner</a> by Schmidt Futures for developing a gamified app to promote Sanskrit language preservation and facilitate easy learning.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work / Research -->
+    <section id="work">
+        <div class="section-label reveal">03 &mdash; Research</div>
+        <h2 class="section-heading reveal">Where I've <br>worked<span class="accent">.</span></h2>
+
+        <div class="exp-list">
+            <a class="exp-item reveal" href="https://usesalus.ai" target="_blank">
+                <div class="exp-where">Salus &mdash; YC W26</div>
+                <div class="exp-what">
+                    <h3>Co-Founder &mdash; Agent Reliability</h3>
+                    <p>Building Salus, a YC W26 startup making AI agents reliable. Ensuring agents actually do what they're supposed to.</p>
+                </div>
+            </a>
+            <div class="exp-item reveal">
+                <div class="exp-where">Open Virtual<br>Assistant Lab</div>
+                <div class="exp-what">
+                    <h3>Long-Context Reasoning in LLMs</h3>
+                    <p>Working on improving long-context reasoning capabilities in large language models. Current research focus.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">Legal Design Lab</div>
+                <div class="exp-what">
+                    <h3>Legal AI Tools</h3>
+                    <p>Building AI-powered tools to make legal processes more accessible and efficient.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">Stanford CS</div>
+                <div class="exp-what">
+                    <h3>Brain-Computer Interfaces & Reasoning LLMs</h3>
+                    <p>Worked on brain-computer interfaces and developing mathematically strong reasoning LLMs.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">King Center</div>
+                <div class="exp-what">
+                    <h3>Bias Detection in Historical Documents</h3>
+                    <p>Applied NLP and computer vision to detect bias in historical documents.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">Stanford AFTLab</div>
+                <div class="exp-what">
+                    <h3>LLM-Based Credit Rating Models</h3>
+                    <p>Built LLM-based credit rating models using financial filings and economic data.</p>
+                </div>
+            </div>
+            <div class="exp-item reveal">
+                <div class="exp-where">MIT &mdash; RSI</div>
+                <div class="exp-what">
+                    <h3>Natural Language Translation Models</h3>
+                    <p>At MIT's Probabilistic Computing Project as part of the Research Science Institute, worked on natural language translation models.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects">
+        <div class="section-label reveal">04 &mdash; Projects</div>
+        <h2 class="section-heading reveal">Things I've <br>built<span class="accent">.</span></h2>
+
+        <div class="project-list">
+            <a class="project-row reveal" href="https://github.com/thevedants/CryptoAgents" target="_blank">
+                <span class="proj-num">01</span>
+                <div class="proj-info">
+                    <span class="proj-name">CryptoAgents</span>
+                    <span class="proj-desc">Multi-agent LLM system combining technical and sentiment analysis to drive cryptocurrency trading decisions.</span>
+                    <div class="proj-tags">
+                        <span class="proj-tag">LLMs</span>
+                        <span class="proj-tag">Multi-Agent</span>
+                        <span class="proj-tag">Finance</span>
+                    </div>
+                </div>
+                <span class="proj-arrow">&nearr;</span>
+            </a>
+            <a class="project-row reveal" href="https://github.com/thevedants/GalHero" target="_blank">
+                <span class="proj-num">02</span>
+                <div class="proj-info">
+                    <span class="proj-name">GalHero</span>
+                    <span class="proj-desc">Search through your photos using natural language. Semantic image search powered by vision-language models.</span>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Computer Vision</span>
+                        <span class="proj-tag">NLP</span>
+                        <span class="proj-tag">Search</span>
+                    </div>
+                </div>
+                <span class="proj-arrow">&nearr;</span>
+            </a>
+            <a class="project-row reveal" href="https://github.com/thevedants/OnCode" target="_blank">
+                <span class="proj-num">03</span>
+                <div class="proj-info">
+                    <span class="proj-name">OnCode</span>
+                    <span class="proj-desc">Your competitive programming assistant. Helps with problem analysis, solution generation, and optimization.</span>
+                    <div class="proj-tags">
+                        <span class="proj-tag">AI</span>
+                        <span class="proj-tag">Competitive Programming</span>
+                    </div>
+                </div>
+                <span class="proj-arrow">&nearr;</span>
+            </a>
+            <a class="project-row reveal" href="https://github.com/thevedants/Tennis" target="_blank">
+                <span class="proj-num">04</span>
+                <div class="proj-info">
+                    <span class="proj-name">Trader's Court</span>
+                    <span class="proj-desc">Predicts tennis match outcomes using deep learning and real-time data. Sports analytics meets AI.</span>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Deep Learning</span>
+                        <span class="proj-tag">Sports Analytics</span>
+                    </div>
+                </div>
+                <span class="proj-arrow">&nearr;</span>
+            </a>
+            <a class="project-row reveal" href="https://github.com/thevedants" target="_blank">
+                <span class="proj-num">05</span>
+                <div class="proj-info">
+                    <span class="proj-name">PokerGenius</span>
+                    <span class="proj-desc">AI-powered poker strategy tool. Built after winning the Stanford-Berkeley Poker Tournament.</span>
+                    <div class="proj-tags">
+                        <span class="proj-tag">AI</span>
+                        <span class="proj-tag">Game Theory</span>
+                        <span class="proj-tag">Strategy</span>
+                    </div>
+                </div>
+                <span class="proj-arrow">&nearr;</span>
+            </a>
+            <a class="project-row reveal" href="https://github.com/thevedants/Coolio" target="_blank">
+                <span class="proj-num">06</span>
+                <div class="proj-info">
+                    <span class="proj-name">Coolio</span>
+                    <span class="proj-desc">A cool utility project. Check out the repo for more.</span>
+                    <div class="proj-tags">
+                        <span class="proj-tag">Utility</span>
+                    </div>
+                </div>
+                <span class="proj-arrow">&nearr;</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Fun -->
+    <section id="fun">
+        <div class="section-label reveal">05 &mdash; Beyond Code</div>
+
+        <h2 class="section-heading reveal">When I'm not <br>coding<span class="accent">.</span></h2>
+        <p class="fun-intro reveal">When I'm not working on AI or research, I'm usually reading, playing badminton, or deep in sports stats. I'm a big reader &mdash; from sci-fi to historical novels like <em>The Count of Monte Cristo</em>. I also love poker, and recently won the Stanford-Berkeley Poker Tournament. Inspired by the game's mix of math and strategy, I built PokerGenius. Always down for a game of heads up.</p>
+        <div class="gallery-grid gallery-three">
+            <div class="gallery-cell">
+                <img src="./images/IMG_2659.jpeg" alt="Vedant - Adventures" loading="eager">
+            </div>
+            <div class="gallery-cell">
+                <img src="./images/IMG_1718.jpeg" alt="Vedant - Work" loading="eager">
+            </div>
+            <div class="gallery-cell">
+                <img src="./images/IMG_2899.jpeg" alt="Vedant - Life" loading="eager">
+            </div>
+        </div>
+    </section>
+
+    <!-- Notebook -->
+    <section id="notebook">
+        <div class="section-label reveal">06 &mdash; Notebook</div>
+        <h2 class="section-heading reveal">What I'm reading <br>&amp; thinking<span class="accent">.</span></h2>
+
+        <div class="notebook-grid">
+            <!-- Books & Shows -->
+            <div class="bookshelf">
+                <h3 class="notebook-sub reveal">Books</h3>
+                <div class="book-list">
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">The Stranger</span>
+                            <span class="book-author">Albert Camus</span>
+                            <span class="book-note">meursault gets cooked for not performing grief the way society expects. the sun made him do it is still the funniest defense ever</span>
+                        </div>
+                    </div>
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">The Trial</span>
+                            <span class="book-author">Franz Kafka</span>
+                            <span class="book-note">kafka wrote the most accurate depiction of dealing with any large institution. josef k would not survive the dmv</span>
+                        </div>
+                    </div>
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">Stoner</span>
+                            <span class="book-author">John Williams</span>
+                            <span class="book-note">nothing happens and yet everything happens. you finish it and just stare at the wall for 20 minutes</span>
+                        </div>
+                    </div>
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">The Road</span>
+                            <span class="book-author">Cormac McCarthy</span>
+                            <span class="book-note">the &ldquo;carrying the fire&rdquo; line lives in my head rent free. mccarthy proves you don&rsquo;t need adjectives to make someone cry</span>
+                        </div>
+                    </div>
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">The Bell Jar</span>
+                            <span class="book-author">Sylvia Plath</span>
+                            <span class="book-note">plath makes you feel the walls closing in through perfectly normal sentences. the fig tree passage alone is worth it</span>
+                        </div>
+                    </div>
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">Blood Meridian</span>
+                            <span class="book-author">Cormac McCarthy</span>
+                            <span class="book-note">i&rsquo;m not sure i understood all of it and i&rsquo;m not sure you&rsquo;re supposed to. the judge is the scariest character in all of literature</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="notebook-sub reveal" style="margin-top:48px">Shows</h3>
+                <div class="book-list">
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">Succession</span>
+                            <span class="book-note">you watch it for the plot and stay for the way these people weaponize dinner conversation. &ldquo;you can&rsquo;t do anything because you&rsquo;re nothing&rdquo; is peak writing</span>
+                        </div>
+                    </div>
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">The Sopranos</span>
+                            <span class="book-note">tony soprano is the reason every prestige show has a morally complex lead. also genuinely one of the funniest shows ever made</span>
+                        </div>
+                    </div>
+                    <div class="book-card reveal">
+                        <div class="book-spine"></div>
+                        <div class="book-info">
+                            <span class="book-title">The Office</span>
+                            <span class="book-note">i&rsquo;ve seen this show an embarrassing number of times. the jim and dwight dynamic carries civilization</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thoughts -->
+            <div class="thoughts">
+                <h3 class="notebook-sub reveal">Thoughts</h3>
+                <div class="thought-list">
+                    <blockquote class="thought-card reveal">
+                        <p>&ldquo;no man ever steps in the same river twice, for it&rsquo;s not the same river and he&rsquo;s not the same man&rdquo;</p>
+                        <cite>Heraclitus</cite>
+                        <span class="thought-gloss">the most elegant way to say you&rsquo;re not who you were yesterday</span>
+                    </blockquote>
+                    <blockquote class="thought-card reveal">
+                        <p>&ldquo;in the midst of winter, i found there was, within me, an invincible summer&rdquo;</p>
+                        <cite>Camus</cite>
+                        <span class="thought-gloss">i think about this more than i should</span>
+                    </blockquote>
+                    <blockquote class="thought-card reveal">
+                        <p>&ldquo;since we&rsquo;re all going to die, it&rsquo;s obvious that when and how don&rsquo;t matter&rdquo;</p>
+                        <cite>Camus</cite>
+                        <span class="thought-gloss">weirdly the most freeing thing i&rsquo;ve ever read</span>
+                    </blockquote>
+                    <blockquote class="thought-card reveal">
+                        <p>&ldquo;the torment of precautions often exceeds the dangers to be avoided. it is sometimes better to abandon one&rsquo;s self to destiny&rdquo;</p>
+                        <cite>Napoleon</cite>
+                        <span class="thought-gloss">the most eloquent way to say stop overthinking</span>
+                    </blockquote>
+                    <blockquote class="thought-card reveal">
+                        <p>&ldquo;there are cathedrals everywhere for those with eyes to see&rdquo;</p>
+                        <cite>don&rsquo;t remember</cite>
+                        <span class="thought-gloss">heard it once and it never left. makes you pay attention to the ordinary</span>
+                    </blockquote>
+                    <blockquote class="thought-card reveal">
+                        <p>&ldquo;the harder i work, the luckier i get&rdquo;</p>
+                        <cite>don&rsquo;t remember</cite>
+                        <span class="thought-gloss">everyone says it. still hasn&rsquo;t been disproven</span>
+                    </blockquote>
+                    <blockquote class="thought-card reveal">
+                        <p>&ldquo;shoot for the moon, even if you miss you&rsquo;ll land among the stars&rdquo;</p>
+                        <cite>don&rsquo;t remember</cite>
+                        <span class="thought-gloss">corny? maybe. but it got me through more late nights than i&rsquo;d admit</span>
+                    </blockquote>
+                    <blockquote class="thought-card reveal">
+                        <p>running is the closest thing to meditation that actually works. mile 8 is where your brain finally shuts up</p>
+                        <cite>me</cite>
+                        <span class="thought-gloss">not a quote i found somewhere. just something i&rsquo;ve learned the hard way at 6am</span>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-headline reveal">
+                Let's build something<br>
+                <a href="mailto:vedants@stanford.edu">together.</a>
+            </div>
+            <div class="footer-col reveal reveal-d1">
+                <h4>Connect</h4>
+                <a href="mailto:vedants@stanford.edu" target="_blank">Email</a>
+                <a href="https://www.linkedin.com/in/thevedantsingh/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/thevedants" target="_blank">GitHub</a>
+                <a href="https://x.com/thevedants1" target="_blank">X / Twitter</a>
+            </div>
+            <div class="footer-col reveal reveal-d2">
+                <h4>Navigate</h4>
+                <a href="#top">Top</a>
+                <a href="#about">About</a>
+                <a href="#honors">Honors</a>
+                <a href="#work">Research</a>
+                <a href="#projects">Projects</a>
+                <a href="#fun">Fun</a>
+                <a href="#notebook">Notebook</a>
+            </div>
+        </div>
+        <div class="footer-bar">
+            <span>&copy; 2026 Vedant Singh</span>
+            <span>Made with curiosity</span>
+        </div>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
     <script>
-        function toggleTheme() {
-            document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
+    (function() {
+        'use strict';
+
+        /* --- Custom Cursor --- */
+        const ring = document.querySelector('.cursor-ring');
+        const dot = document.querySelector('.cursor-dot');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+
+        if (window.matchMedia('(pointer: fine)').matches && ring && dot) {
+            document.addEventListener('mousemove', e => {
+                mx = e.clientX;
+                my = e.clientY;
+                dot.style.left = mx + 'px';
+                dot.style.top = my + 'px';
+            });
+
+            (function animate() {
+                rx += (mx - rx) * 0.15;
+                ry += (my - ry) * 0.15;
+                ring.style.left = rx + 'px';
+                ring.style.top = ry + 'px';
+                requestAnimationFrame(animate);
+            })();
+
+            document.querySelectorAll('a, button, .stat-card, .gallery-cell, .exp-item').forEach(el => {
+                el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+            });
         }
 
-        function showContent(section) {
-            document.querySelectorAll('.content').forEach(content => {
-                content.classList.remove('active');
+        /* --- Scroll Progress --- */
+        const progressBar = document.querySelector('.progress');
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            const total = document.documentElement.scrollHeight - window.innerHeight;
+            if (total > 0) {
+                progressBar.style.width = (scrolled / total * 100) + '%';
+            }
+        }, { passive: true });
+
+        /* --- Reveal on Scroll --- */
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
             });
-            document.getElementById(section).classList.add('active');
-        }
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        reveals.forEach(el => observer.observe(el));
+
+        /* --- Smooth anchor scrolling --- */
+        document.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', e => {
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        /* --- Parallax on hero elements (subtle) --- */
+        const heroHeading = document.querySelector('.hero-heading');
+        const heroSub = document.querySelector('.hero-sub');
+        window.addEventListener('scroll', () => {
+            const y = window.scrollY;
+            if (y < window.innerHeight) {
+                const ratio = y / window.innerHeight;
+                heroHeading.style.transform = `translateY(${y * 0.25}px)`;
+                heroHeading.style.opacity = 1 - ratio * 1.2;
+                heroSub.style.opacity = Math.max(0, 1 - ratio * 1.5);
+            }
+        }, { passive: true });
+    })();
     </script>
+
 </body>
 </html>
-<style>
-    /* Import Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-    /* Updated styles */
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .profile-section {
-        display: flex;
-        align-items: center;
-        gap: 40px;
-        margin: 40px 0;
-    }
-
-    .profile-image {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--text-color);
-        box-shadow: 0 0 20px rgba(135, 206, 235, 0.3);
-    }
-
-    #home {
-        text-align: center;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    #home h1 {
-        font-size: 2.5em;
-        margin-bottom: 20px;
-        background: linear-gradient(45deg, #87ceeb, #4a90e2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: 600;
-    }
-
-    #home p {
-        font-size: 1.1em;
-        line-height: 1.6;
-        max-width: 600px;
-        margin: 0 auto;
-        font-weight: 300;
-    }
-
-    .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 20px;
-        background-color: var(--bg-color);
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        border-top: 1px solid var(--text-color);
-    }
-
-    .social-icon {
-        width: 24px;
-        height: 24px;
-        transition: transform 0.3s ease;
-    }
-
-    .social-icon:hover {
-        transform: translateY(-5px);
-    }
-</style>
-
-<!-- Update the home content div -->
-<script>
-    document.getElementById('home').innerHTML = `
-        <div class="profile-section">
-            <img src="images/IMG_0006.jpeg" alt="Vedant Singh" class="profile-image">
-            <div>
-                <h1>Vedant Singh</h1>
-                <p>Hi! I'm a Computer Science student at Stanford University, passionate about artificial intelligence and technology innovation. I love exploring new technologies and solving real-world problems through computation.</p>
-            </div>
-        </div>
-    `;
-
-    // Create footer
-    const footer = document.createElement('div');
-    footer.className = 'footer';
-    footer.innerHTML = `
-        <a href="mailto:vedants@stanford.edu" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/552/552486.png" alt="Email" class="social-icon">
-        </a>
-        <a href="https://www.linkedin.com/in/thevedantsingh/" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/145/145807.png" alt="LinkedIn" class="social-icon">
-        </a>
-        <a href="https://github.com/thevedants" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/733/733553.png" alt="GitHub" class="social-icon">
-        </a>
-        <a href="https://x.com/thevedants1" target="_blank">
-            <img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" class="social-icon">
-        </a>
-    `;
-    document.body.appendChild(footer);
-</script>
-<style>
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .profile-section {
-        animation: fadeInUp 1s ease-out;
-    }
-
-    .profile-section h1 {
-        font-size: 3.5em;
-        margin-bottom: 10px;
-        background: linear-gradient(45deg, var(--text-color), #4a90e2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: fadeInUp 1s ease-out 0.3s backwards;
-    }
-
-    .profile-section p {
-        font-size: 1.1em;
-        line-height: 1.6;
-        opacity: 0;
-        animation: fadeInUp 1s ease-out 0.6s forwards;
-    }
-
-    /* Update the existing profile section styles */
-    .profile-section {
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        padding: 40px 20px;
-    }
-
-    .profile-image {
-        border-radius: 50%;
-        width: 200px;
-        height: 200px;
-        object-fit: cover;
-        animation: fadeInUp 1s ease-out;
-    }
-</style>
-
-<script>
-    // Update the profile section content with the new styling
-    document.getElementById('home').innerHTML = `
-        <div class="profile-section">
-            <img src="images/IMG_0006.jpeg" alt="Vedant Singh" class="profile-image">
-            <div>
-                <h1>Hi, I'm Vedant Singh</h1>
-                <p>As a junior at Stanford University, I'm drawn to the intersection of numbers, data, and computation. I enjoy exploring how technology can solve interesting problems, and I'm always eager to learn something new. Feel free to look around to see what I've been working on and do not hesitate to reach out if you find something fun!</p>
-            </div>
-        </div>
-    `;
-</script>
-<script>
-    // Update the work section content with image and text layout
-    document.getElementById('work').innerHTML = `
-        <div class="profile-section">
-            <img src="images/IMG_1718.jpeg" alt="Work" class="profile-image">
-            <div>
-                <h2>Research & Projects</h2>
-                <p> I'm currently studying Mathematics and Computer Science at Stanford, where I am working on improving long-context reasoning in LLMs at the Open Virtual Assistant Lab, and legal AI tools at the Legal Design Lab. Previously at Stanford's CS Department, I worked on brain-computer interfaces and developing mathematically strong reasoning LLMs. At the King Center, I applied NLP and computer vision to detect bias in historical documents. At Stanford’s Advanced Financial Technology Lab, I built LLM-based credit rating models using financial filings and economic data. With CryptoAgents, I developed a multi-agent LLM system that combines technical and sentiment analysis to drive cryptocurrency trading decisions. Earlier as part of the Research Science Institute, at MIT's Probabilistic Computing Project, I worked on natural language translation models. Some of my other projects include <a href="https://github.com/thevedants/GalHero" style="text-decoration: underline; color: inherit;">GalHero</a>, a tool that allows you to search through your photos app using natural language, <a href="https://github.com/thevedants/OnCode" style="text-decoration: underline; color: inherit;">OnCode</a>, your competitive programming assistant and <a href="https://github.com/thevedants/Coolio" style="text-decoration: underline; color: inherit;">Coolio</a>.</p>
-                <p> I had the honor of representing India at the <a href ="https://ioling.org/results/2021/" style="text-decoration: underline; color: inherit;">International Linguistics Olympiad</a> and the Asia Pacific Linguistics Olympiad, where I earned two silver medals and a bronze. Additionally, I contributed as a member of the problem committees for the Online Linguistics Olympiad and the Indian Panini Linguistics Olympiad. My passion for linguistics extends into technology, where I developed a gamified app to promote Sanskrit language preservation and facilitate easy learning. This innovation earned me recognition as a <a href ="https://www.risefortheworld.org/winners/vedant-singh" style="text-decoration: underline; color: inherit;">Rise Global Winner</a> by Schmidt Futures.</p>
-                <p> My coursework spans both technical and theoretical domains, reflecting my interest in understanding both the mathematical principles behind computation and their real-world implementations. Beyond academics, I'm actively involved in Stanford's tech community through organizations like ACM and the Blockchain Club, where I engage with fellow students passionate about technology. I also participate in competitive programming through ICPC and help organize the Stanford Math Tournament, allowing me to apply my skills while giving back to the community.</p>
-            </div>
-        </div>
-    `;
-</script>
-<script>
-    // Update the fun section content with grid of images and text layout
-    document.getElementById('fun').innerHTML = `
-        <div class="profile-section">
-            <div class="fun-image-grid">
-                <img src="images/IMG_2659.jpeg" alt="Fun 1" class="fun-image">
-                <img src="images/IMG_2899.jpeg" alt="Fun 2" class="fun-image">
-                <img src="images/IMG_3871.jpeg" alt="Fun 3" class="fun-image">
-                <img src="images/IMG_5282.jpeg" alt="Fun 4" class="fun-image">
-            </div>
-            <div>
-                <h2>Fun</h2>
-                <p>When I’m not working on code or AI projects, I’m usually reading, playing badminton, or looking at sports stats. I’m a big reader and enjoy a mix of genres—from sci-fi to historical novels like <em>The Count of Monte Cristo</em>. I’ve turned my interest in sports analytics into a project called Trader’s Court, which predicts tennis matches using deep learning and real-time data. I also enjoy poker and recently won the Stanford-Berkeley Poker Tournament. Inspired by the game’s mix of math and strategy, I built PokerGenius, an AI tool to help with poker strategy. Always down for a game of heads up!</p>
-            </div>
-        </div>
-    `;
-</script>
-<style>
-    .fun-image-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        width: 200px;
-        height: 200px;
-    }
-
-    .fun-image {
-        width: 95px;
-        height: 95px;
-        object-fit: cover;
-        border-radius: 10px;
-        animation: fadeInUp 1s ease-out;
-    }
-</style>
-
-<link rel="manifest" href="site.webmanifest">
-<style>
-    /* Add decorative circles */
-    .circle {
-        position: fixed;
-        border-radius: 50%;
-        background: rgba(135, 206, 235, 0.08);
-        pointer-events: none;
-        z-index: -1;
-    }
-
-    /* Left side circles */
-    .circle-left-1 {
-        width: 300px;
-        height: 300px;
-        left: 50px;
-        top: 15%;
-    }
-
-    .circle-left-2 {
-        width: 180px;
-        height: 180px;
-        left: -80px;
-        top: 45%;
-    }
-
-    .circle-left-3 {
-        width: 220px;
-        height: 220px;
-        left: 120px;
-        top: 75%;
-    }
-
-    /* Right side circles */
-    .circle-right-1 {
-        width: 250px;
-        height: 250px;
-        right: -100px;
-        top: 25%;
-    }
-
-    .circle-right-2 {
-        width: 200px;
-        height: 200px;
-        right: 80px;
-        top: 55%;
-    }
-
-    .circle-right-3 {
-        width: 160px;
-        height: 160px;
-        right: -60px;
-        top: 80%;
-    }
-
-    /* Add subtle animation to circles */
-    @keyframes float {
-        0% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0); }
-    }
-
-    .circle {
-        animation: float 8s ease-in-out infinite;
-    }
-
-    .circle:nth-child(odd) {
-        animation-delay: -4s;
-    }
-</style>
-
-<script>
-    // Add circles to the DOM
-    const circles = `
-        <div class="circle circle-left-1"></div>
-        <div class="circle circle-left-2"></div>
-        <div class="circle circle-left-3"></div>
-        <div class="circle circle-right-1"></div>
-        <div class="circle circle-right-2"></div>
-        <div class="circle circle-right-3"></div>
-    `;
-    document.body.insertAdjacentHTML('afterbegin', circles);
-</script>
-
-<style>
-    .logo {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        width: 50px;
-        height: 50px;
-    }
-
-    .logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-</style>
-
-<div class="logo">
-    <img src="images/vs logo black.jpg" alt="Logo">
-</div>
-
-
-<style>
-    /* Update Twitter/X icon */
-    .footer a[href*="x.com"] img {
-        content: url('https://cdn-icons-png.flaticon.com/512/5969/5969020.png');
-    }
-</style>
-<link rel="icon" type="image/png" href="images/vs logo black.jpg">
-<link rel="shortcut icon" type="image/png" href="images/vs logo black.jpg">
-
-
-<script>
-    // Check if dark mode is enabled and update logo accordingly
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.querySelector('.logo img').src = "images/vs logo black.jpg";
-    }
-
-    // Listen for changes in color scheme
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-        document.querySelector('.logo img').src = e.matches 
-            ? "images/vs logo black.jpg"
-            : "images/vs logo black.jpg";
-    });
-</script>
-
-<script>
-    // Update logo based on initial color scheme
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-        document.querySelector('.logo img').src = "images/vs logo black.jpg";
-    }
-
-    // Listen for changes to light mode
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
-        if (e.matches) {
-            document.querySelector('.logo img').src = "images/vs logo black.jpg";
-        }
-    });
-</script>
-
-
