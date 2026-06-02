@@ -8,1360 +8,864 @@
     <link rel="icon" type="image/png" href="./images/vs logo black.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Display: Cormorant Garamond (high-contrast classical serif) · Body: Hanken Grotesk (understated sans) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* ===== RESET & BASE ===== */
+        /* ===================================================================
+           VEDANT SINGH — exhibition catalogue
+           Austere editorial. Typography & whitespace do all the work.
+           =================================================================== */
+
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg: #0a0a0a;
-            --text: #ededed;
-            --text-dim: #777;
-            --accent: #91f9e5;
-            --accent-dim: rgba(145, 249, 229, 0.08);
-            --border: rgba(255, 255, 255, 0.07);
-            --card: rgba(255, 255, 255, 0.025);
-            --radius: 10px;
+            /* — warm paper palette, nothing pure — */
+            --paper:       #f4efe4;   /* soft warm cream background          */
+            --paper-2:     #efe8d9;   /* faint panel / image mat             */
+            --ink:         #211d18;   /* warm near-black text                */
+            --ink-soft:    #4c453b;   /* secondary body text                 */
+            --dim:         #7b7264;   /* labels, captions, metadata          */
+            --accent:      #9c4f33;   /* muted terracotta — the ONE accent   */
+            /* swap-in alternates (one line):  olive #5b5d3f · ochre #9a7b3f */
+            --rule:        rgba(33, 29, 24, 0.14);   /* hairline             */
+            --rule-soft:   rgba(33, 29, 24, 0.08);
+            --gutter:      clamp(22px, 6vw, 120px);
+            --maxw:        1240px;
         }
 
-        html {
-            scroll-behavior: smooth;
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent) transparent;
-        }
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-            overflow-x: hidden;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 400;
+            line-height: 1.7;
             -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            overflow-x: hidden;
         }
 
-        ::selection {
-            background: var(--accent);
-            color: var(--bg);
-        }
-
+        ::selection { background: var(--accent); color: var(--paper); }
         a { color: inherit; text-decoration: none; }
         img { display: block; max-width: 100%; }
 
-        /* ===== CUSTOM CURSOR ===== */
-        @media (pointer: fine) {
-            body { cursor: none; }
-            a, button, [onclick] { cursor: none; }
+        /* keyboard focus — restrained terracotta ring */
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 4px;
+            border-radius: 1px;
+        }
+        /* fixed-header offset so anchored sections aren't tucked under it */
+        section[id] { scroll-margin-top: 94px; }
+        /* old-style (text) figures — fine typesetting for numerals */
+        .onum { font-feature-settings: "onum" 1, "pnum" 1; }
+
+        /* — shared link treatment: hairline underline, accent on hover — */
+        .link {
+            color: var(--ink);
+            background-image: linear-gradient(var(--accent), var(--accent));
+            background-size: 100% 1px;
+            background-repeat: no-repeat;
+            background-position: 0 1.15em;
+            transition: color .35s ease, background-position .35s ease;
+        }
+        .link:hover { color: var(--accent); }
+
+        /* ===== TYPOGRAPHIC PRIMITIVES ===== */
+        .display {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 500;
+            line-height: 1.02;
+            letter-spacing: -0.01em;
+        }
+        .label {
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--dim);
         }
 
-        .cursor-ring {
-            position: fixed;
-            width: 36px;
-            height: 36px;
-            border: 1.5px solid var(--accent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-                        width 0.3s ease, height 0.3s ease,
-                        opacity 0.2s ease;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: difference;
-        }
-
-        .cursor-dot {
-            position: fixed;
-            width: 5px;
-            height: 5px;
-            background: var(--accent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-        }
-
-        .cursor-ring.hovering {
-            width: 60px;
-            height: 60px;
-            border-color: var(--accent);
-            opacity: 0.5;
-        }
-
-        @media (pointer: coarse) {
-            .cursor-ring, .cursor-dot { display: none; }
-        }
-
-        /* ===== SCROLL PROGRESS ===== */
-        .progress {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 2px;
-            background: var(--accent);
-            z-index: 1000;
-            width: 0%;
-            will-change: width;
-        }
-
-        /* ===== GRAIN TEXTURE ===== */
-        .grain {
-            position: fixed;
-            inset: -100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 9998;
-            opacity: 0.5;
-        }
+        /* ===== SHELL ===== */
+        .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
 
         /* ===== HEADER ===== */
         header {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 500;
-            padding: 28px 48px;
+            inset: 0 0 auto 0;
+            z-index: 100;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            mix-blend-mode: difference;
+            justify-content: space-between;
+            padding: 22px var(--gutter);
+            background: color-mix(in srgb, var(--paper) 82%, transparent);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid transparent;
+            transition: border-color .4s ease, padding .4s ease;
         }
-
-        .logo-mark {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: #fff;
-            letter-spacing: -0.03em;
+        header.scrolled { border-bottom-color: var(--rule); padding-top: 16px; padding-bottom: 16px; }
+        .brand {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.35rem;
+            letter-spacing: 0.01em;
         }
-
-        nav { display: flex; gap: 36px; }
-
-        nav a {
-            color: #fff;
-            font-size: 0.78rem;
-            font-weight: 400;
-            letter-spacing: 0.08em;
+        header nav { display: flex; gap: clamp(18px, 2.2vw, 38px); }
+        header nav a {
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
-            position: relative;
-            padding-bottom: 2px;
+            color: var(--dim);
+            transition: color .3s ease;
+        }
+        header nav a:hover,
+        header nav a.is-current { color: var(--ink); }
+        header nav a.is-current { color: var(--accent); }
+
+        /* — mobile menu trigger — */
+        .nav-toggle {
+            display: none;
+            background: none; border: none;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--ink); cursor: pointer;
+        }
+        @media (max-width: 720px) {
+            .desktop-nav { display: none; }
+            .nav-toggle { display: inline-flex; }
         }
 
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: #fff;
-            transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        /* — full-screen catalogue menu — */
+        .mobile-nav {
+            position: fixed; inset: 0; z-index: 200;
+            background: var(--paper);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 0 var(--gutter);
+            transform: translateY(-101%);
+            transition: transform .55s cubic-bezier(.2,.7,.2,1);
+        }
+        body.nav-open { overflow: hidden; }
+        body.nav-open .mobile-nav { transform: none; }
+        .mobile-nav a {
+            display: flex; align-items: baseline; gap: 18px;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500; font-size: clamp(2rem, 11vw, 3.2rem);
+            line-height: 1.5; color: var(--ink);
+        }
+        .mobile-nav a.is-current { color: var(--accent); }
+        .mobile-nav .m-num {
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em;
+            color: var(--accent); transform: translateY(-0.2em);
+        }
+        .m-close {
+            position: absolute; top: 22px; right: var(--gutter);
+            background: none; border: none; cursor: pointer;
+            font-family: 'Hanken Grotesk', sans-serif;
+            font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink);
         }
 
-        nav a:hover::after { width: 100%; }
+        /* — running folio, like a book's margin header — */
+        .folio {
+            position: fixed; left: 14px; top: 50%; z-index: 90;
+            transform: translateY(-50%) rotate(180deg);
+            writing-mode: vertical-rl;
+            font-size: 0.6rem; font-weight: 600;
+            letter-spacing: 0.26em; text-transform: uppercase;
+            color: var(--dim); pointer-events: none;
+        }
+        @media (max-width: 1180px) { .folio { display: none; } }
 
         /* ===== HERO ===== */
-        .hero {
-            min-height: 100vh;
-            min-height: 100svh;
+        .hero { padding-top: clamp(150px, 22vh, 260px); padding-bottom: clamp(60px, 10vh, 120px); }
+        .hero-meta {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0 48px;
-            position: relative;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--rule);
+            margin-bottom: clamp(40px, 8vh, 90px);
         }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--text-dim);
-            margin-bottom: 32px;
-            opacity: 0;
-            animation: fadeUp 0.8s ease 0.5s forwards;
+        .hero-h1 {
+            font-size: clamp(3.7rem, 17vw, 15rem);
+            margin-left: -0.04em;
         }
-
-        .hero-badge .dot {
-            width: 6px;
-            height: 6px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s ease infinite;
+        .hero-h1 em { font-style: italic; font-weight: 400; }
+        .hero-h1 .mark { color: var(--accent); font-style: normal; }
+        .hero-caption {
+            margin-top: clamp(22px, 3.5vh, 38px);
+            padding-top: 16px;
+            border-top: 1px solid var(--rule);
+            max-width: 26em;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .hero-heading {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(3.2rem, 9.5vw, 8.5rem);
-            font-weight: 700;
-            line-height: 0.92;
-            letter-spacing: -0.045em;
-            margin-bottom: 36px;
-        }
-
-        .hero-heading .line {
-            display: block;
-            overflow: hidden;
-        }
-
-        .hero-heading .line-inner {
-            display: inline-block;
-            transform: translateY(115%);
-            animation: revealUp 1.1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
-        }
-
-        .hero-heading .line:nth-child(2) .line-inner { animation-delay: 0.12s; }
-        .hero-heading .line:nth-child(3) .line-inner { animation-delay: 0.24s; }
-
-        .hero-heading .accent { color: var(--accent); }
-        .hero-heading em { font-style: italic; }
-
-        @keyframes revealUp {
-            to { transform: translateY(0); }
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero-sub {
-            font-size: clamp(0.95rem, 1.6vw, 1.2rem);
-            color: var(--text-dim);
-            max-width: 540px;
+        .hero-lede {
+            margin-top: clamp(34px, 5vh, 56px);
+            max-width: 30em;
+            margin-left: auto;
+            font-size: clamp(1.05rem, 1.5vw, 1.3rem);
             font-weight: 300;
-            line-height: 1.75;
-            opacity: 0;
-            animation: fadeUp 0.9s ease 0.7s forwards;
+            line-height: 1.65;
+            color: var(--ink-soft);
+        }
+        @media (max-width: 720px) { .hero-lede { margin-left: 0; } }
+        @media (max-width: 560px) {
+            .hero-meta { flex-direction: column; align-items: flex-start; gap: 6px; }
+            .hero-meta .label { font-size: 0.62rem; }
         }
 
-        .hero-scroll-hint {
-            position: absolute;
-            bottom: 40px;
-            left: 48px;
+        /* ===== SECTION SCAFFOLD ===== */
+        section.plate { padding: clamp(80px, 13vh, 180px) 0; }
+        @media (max-width: 560px) { section.plate { padding: 64px 0; } }
+        .sec-head {
             display: flex;
-            align-items: center;
-            gap: 14px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: var(--text-dim);
-            opacity: 0;
-            animation: fadeUp 0.8s ease 1.2s forwards;
+            align-items: baseline;
+            gap: 16px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid var(--rule);
+            margin-bottom: clamp(40px, 7vh, 80px);
         }
-
-        .scroll-track {
-            width: 48px;
-            height: 1px;
-            background: var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .scroll-track::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--accent);
-            animation: trackSlide 2.2s ease-in-out infinite;
-        }
-
-        @keyframes trackSlide {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* ===== MARQUEE ===== */
-        .marquee-strip {
-            padding: 40px 0;
-            overflow: hidden;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .marquee-track {
-            display: flex;
-            gap: 48px;
-            animation: marqueeScroll 25s linear infinite;
-            width: max-content;
-        }
-
-        .marquee-track span {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(1.6rem, 4vw, 3.2rem);
-            font-weight: 700;
-            white-space: nowrap;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255,255,255,0.25);
-            letter-spacing: -0.02em;
-        }
-
-        .marquee-track span.filled {
-            color: var(--text);
-            -webkit-text-stroke: none;
-        }
-
-        .marquee-track span.accent-fill {
+        .sec-num {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
             color: var(--accent);
-            -webkit-text-stroke: none;
+            font-feature-settings: "onum" 1;
         }
-
-        @keyframes marqueeScroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        .sec-title {
+            font-size: clamp(2.6rem, 6vw, 5.2rem);
+            margin-bottom: 0;
         }
-
-        /* ===== SECTIONS (SHARED) ===== */
-        section {
-            padding: 140px 48px;
-            position: relative;
-        }
-
-        .section-label {
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: var(--accent);
-            margin-bottom: 48px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .section-label::before {
-            content: '';
-            width: 36px;
-            height: 1px;
-            background: var(--accent);
-        }
-
-        .section-heading {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2rem, 4.5vw, 3.8rem);
-            font-weight: 700;
-            letter-spacing: -0.035em;
-            line-height: 1.08;
-            margin-bottom: 56px;
-        }
+        .sec-title em { font-style: italic; font-weight: 400; color: var(--accent); }
 
         /* ===== ABOUT ===== */
-        .about-layout {
+        .about-grid {
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 80px;
+            grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+            gap: clamp(40px, 6vw, 96px);
             align-items: start;
         }
-
-        .about-img-wrap {
-            position: relative;
-            border-radius: var(--radius);
-            overflow: hidden;
-            background: var(--card);
-            min-height: 300px;
+        .about-figure {
+            background: var(--paper-2);
+            padding: 12px;
+            border: 1px solid var(--rule);
+        }
+        .about-figure img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: saturate(0.92); }
+        .about-figcap { margin-top: 12px; }
+        .about-body p { font-size: 1.02rem; color: var(--ink-soft); margin-top: 1.4em; max-width: 38em; }
+        .about-body p:first-child { margin-top: 0; }
+        .about-body strong { font-weight: 600; color: var(--ink); }
+        @media (max-width: 820px) {
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .about-figure { max-width: 360px; }
         }
 
-        .about-img-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            pointer-events: none;
-        }
-
-        .about-img-wrap img {
-            width: 100%;
-            aspect-ratio: 4/5;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .about-img-wrap:hover img {
-            transform: scale(1.04);
-        }
-
-        .about-body p {
-            font-size: 1rem;
-            color: var(--text-dim);
-            line-height: 1.85;
-            margin-bottom: 20px;
-        }
-
-        .about-body p:last-child { margin-bottom: 0; }
-
-        .about-body strong {
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .about-body a {
-            color: var(--accent);
-            text-decoration: underline;
-            text-decoration-color: rgba(145, 249, 229, 0.3);
-            text-underline-offset: 3px;
-            transition: text-decoration-color 0.3s ease;
-        }
-
-        .about-body a:hover {
-            text-decoration-color: var(--accent);
-        }
-
-        /* ===== EXPERIENCE ===== */
-        .exp-list { border-top: 1px solid var(--border); }
-
-        .exp-item {
+        /* ===== CATALOGUE ENTRIES (recognition / research) ===== */
+        .entries { border-top: 1px solid var(--rule); }
+        .entry {
             display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 40px;
-            padding: 36px 0;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.35s ease;
+            grid-template-columns: 200px minmax(0, 1fr);
+            gap: clamp(20px, 4vw, 64px);
+            padding: clamp(26px, 4vh, 44px) 0;
+            border-bottom: 1px solid var(--rule);
+            transition: background .4s ease;
         }
-
-        .exp-item:hover { padding-left: 16px; }
-
-        a.exp-item { text-decoration: none; color: inherit; }
-
-        .exp-where {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-dim);
-            padding-top: 4px;
-        }
-
-        .exp-what h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.15rem;
+        /* austere hover: no fill — the title + tag shift to terracotta */
+        .entry-side {
+            font-size: 0.78rem;
             font-weight: 600;
-            margin-bottom: 6px;
-            transition: color 0.3s ease;
-        }
-
-        .exp-item:hover .exp-what h3 { color: var(--accent); }
-
-        .exp-what p {
-            font-size: 0.88rem;
-            color: var(--text-dim);
-            line-height: 1.65;
-            max-width: 560px;
-        }
-
-        /* ===== PROJECTS ===== */
-        .project-list { border-top: 1px solid var(--border); }
-
-        .project-row {
-            display: grid;
-            grid-template-columns: 48px 1fr auto;
-            gap: 28px;
-            align-items: center;
-            padding: 36px 0;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.35s ease;
-        }
-
-        a.project-row:hover { padding-left: 20px; }
-        a.project-row:hover .proj-name { color: var(--accent); }
-        a.project-row:hover .proj-arrow { transform: translate(6px, -6px); }
-
-        .proj-num {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.82rem;
-            color: var(--text-dim);
-            font-weight: 500;
-        }
-
-        .proj-info { display: flex; flex-direction: column; gap: 4px; }
-
-        .proj-name {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(1.25rem, 2.5vw, 1.85rem);
-            font-weight: 600;
-            transition: color 0.3s ease;
-            letter-spacing: -0.02em;
-        }
-
-        .proj-desc {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            max-width: 520px;
-            line-height: 1.5;
-        }
-
-        .proj-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-
-        .proj-tag {
-            font-size: 0.65rem;
-            padding: 3px 10px;
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            color: var(--text-dim);
+            letter-spacing: 0.12em;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            color: var(--dim);
+            line-height: 1.4;
+            transition: color .35s ease;
+        }
+        a.entry:hover .entry-side { color: var(--accent); }
+        .entry-main h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+            line-height: 1.15;
+            letter-spacing: -0.005em;
+            transition: color .35s ease;
+        }
+        a.entry:hover .entry-main h3 { color: var(--accent); }
+        .entry-main p { margin-top: 0.7em; color: var(--ink-soft); font-size: 0.97rem; max-width: 44em; }
+        @media (max-width: 680px) {
+            .entry { grid-template-columns: 1fr; gap: 10px; }
         }
 
-        .proj-arrow {
-            font-size: 1.3rem;
-            color: var(--text-dim);
-            transition: transform 0.3s ease;
-        }
-
-        /* ===== HONORS (uses exp-list styles) ===== */
-
-        /* ===== FUN / GALLERY ===== */
-        .fun-intro {
-            font-size: 1.05rem;
-            color: var(--text-dim);
-            line-height: 1.85;
-            max-width: 680px;
-            margin-bottom: 56px;
-        }
-
-        .gallery-grid {
+        /* ===== PROJECT PLATES ===== */
+        .plates { border-top: 1px solid var(--rule); }
+        .plate-row {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            grid-template-columns: 64px minmax(0, 1fr) 40px;
+            align-items: baseline;
+            gap: clamp(16px, 3vw, 40px);
+            padding: clamp(28px, 4.5vh, 48px) 0;
+            border-bottom: 1px solid var(--rule);
+            transition: background .4s ease;
+        }
+        .plate-row:hover { background: var(--paper-2); }
+        .plate-num { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--dim); font-feature-settings: "onum" 1; }
+        .plate-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-size: clamp(1.7rem, 3.4vw, 2.7rem);
+            line-height: 1.05;
+            transition: color .35s ease;
+        }
+        .plate-row:hover .plate-name { color: var(--accent); }
+        .plate-desc { margin-top: 0.5em; color: var(--ink-soft); font-size: 0.97rem; max-width: 42em; }
+        .plate-tags { margin-top: 1em; display: flex; flex-wrap: wrap; gap: 8px 22px; }
+        .plate-tags span {
+            font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--dim);
+        }
+        .plate-arrow {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem; color: var(--dim);
+            transition: transform .35s ease, color .35s ease;
+        }
+        .plate-row:hover .plate-arrow { color: var(--accent); transform: translate(3px, -3px); }
+        @media (max-width: 680px) {
+            .plate-row { grid-template-columns: 40px 1fr 24px; gap: 14px; }
         }
 
-        .gallery-cell {
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--radius);
-            aspect-ratio: 1;
-            background: var(--card);
-            min-height: 150px;
-        }
-
-        .gallery-cell img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .gallery-cell:hover img {
-            transform: scale(1.08);
-        }
-
-        .gallery-cell.wide {
-            grid-column: span 2;
-            aspect-ratio: 2/1;
-        }
-
-        .gallery-three {
+        /* ===== FUN ===== */
+        .fun-intro { max-width: 40em; font-size: 1.08rem; font-weight: 300; color: var(--ink-soft); margin-bottom: clamp(40px, 6vh, 72px); }
+        .fun-intro em { font-style: italic; }
+        .gallery {
+            display: grid;
             grid-template-columns: repeat(3, 1fr);
+            gap: clamp(14px, 2vw, 28px);
         }
+        .gallery figure { background: var(--paper-2); padding: 10px; border: 1px solid var(--rule); }
+        .gallery img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; filter: saturate(0.92); }
+        .gallery figcaption { margin-top: 10px; }
+        @media (max-width: 680px) { .gallery { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto; } }
 
         /* ===== NOTEBOOK ===== */
         .notebook-grid {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 80px;
-            align-items: start;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: clamp(48px, 7vw, 110px);
         }
-
-        .notebook-sub {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: var(--accent);
-            margin-bottom: 28px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
+        @media (max-width: 880px) { .notebook-grid { grid-template-columns: 1fr; gap: 64px; } }
+        .nb-sub {
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.22em;
+            text-transform: uppercase; color: var(--accent);
+            padding-bottom: 14px; border-bottom: 1px solid var(--rule); margin-bottom: 8px;
         }
-
-        /* Books */
-        .book-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
+        .book {
+            padding: 22px 0;
+            border-bottom: 1px solid var(--rule-soft);
         }
-
-        .book-card {
-            display: flex;
-            align-items: stretch;
-            gap: 20px;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.35s ease;
+        .book-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+        .book-title { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 1.3rem; }
+        .book-author { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); white-space: nowrap; }
+        @media (max-width: 480px) {
+            .book-head { flex-direction: column; align-items: flex-start; gap: 2px; }
+            .book-author { white-space: normal; }
         }
+        .book-note { margin-top: 0.5em; font-size: 0.9rem; color: var(--ink-soft); max-width: 40em; }
 
-        .book-card:first-child { border-top: 1px solid var(--border); }
-
-        .book-card:hover { padding-left: 12px; }
-        .book-card:hover .book-spine { background: var(--accent); }
-
-        .book-spine {
-            width: 3px;
-            min-height: 100%;
-            background: var(--border);
-            border-radius: 2px;
-            flex-shrink: 0;
-            transition: background 0.35s ease;
+        .thought {
+            padding: 26px 0;
+            border-bottom: 1px solid var(--rule-soft);
         }
-
-        .book-info {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .book-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--text);
-            transition: color 0.3s ease;
-        }
-
-        .book-card:hover .book-title { color: var(--accent); }
-
-        .book-author {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            font-weight: 400;
-        }
-
-        .book-note {
-            font-size: 0.82rem;
-            color: var(--text-dim);
-            line-height: 1.5;
-            margin-top: 4px;
+        .thought p {
+            font-family: 'Cormorant Garamond', serif;
             font-style: italic;
-            opacity: 0.7;
+            font-weight: 500;
+            font-size: clamp(1.25rem, 2vw, 1.6rem);
+            line-height: 1.3;
+            color: var(--ink);
         }
-
-        /* Thoughts */
-        .thought-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
+        .thought cite {
+            display: block; margin-top: 0.8em;
+            font-style: normal; font-size: 0.7rem; font-weight: 600;
+            letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
         }
-
-        .thought-card {
-            padding: 24px 0;
-            border-bottom: 1px solid var(--border);
-            position: relative;
-        }
-
-        .thought-card:first-child { border-top: 1px solid var(--border); }
-
-        .thought-card::before {
-            content: '\201C';
-            font-family: 'Space Grotesk', serif;
-            font-size: 2.5rem;
-            color: var(--accent);
-            line-height: 1;
-            opacity: 0.4;
-            display: block;
-            margin-bottom: -4px;
-        }
-
-        .thought-card p {
-            font-size: 0.95rem;
-            color: var(--text-dim);
-            line-height: 1.7;
-            font-style: italic;
-        }
-
-        .thought-card cite {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--accent);
-            font-style: normal;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-top: 8px;
-        }
-
-        .thought-card .thought-gloss {
-            display: block;
-            font-size: 0.82rem;
-            color: var(--text-dim);
-            opacity: 0.6;
-            margin-top: 4px;
-            font-style: italic;
-        }
+        .thought .gloss { margin-top: 0.6em; font-size: 0.86rem; color: var(--dim); max-width: 38em; }
 
         /* ===== FOOTER ===== */
-        footer {
-            padding: 100px 48px 48px;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-top {
+        footer { border-top: 1px solid var(--rule); padding: clamp(120px, 16vh, 210px) 0 48px; }
+        .footer-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 64px;
-            margin-bottom: 80px;
+            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+            gap: clamp(40px, 6vw, 90px);
+            align-items: start;
         }
-
         .footer-headline {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(1.8rem, 3.5vw, 3rem);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            line-height: 1.15;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+            font-size: clamp(2.6rem, 6vw, 5rem);
+            line-height: 1.02;
+            margin-top: clamp(28px, 6vh, 64px);
         }
-
-        .footer-headline a {
-            color: var(--accent);
-            position: relative;
-            display: inline-block;
-        }
-
-        .footer-headline a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transform-origin: right;
-            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .footer-headline a:hover::after {
-            transform: scaleX(1);
-            transform-origin: left;
-        }
-
+        .footer-headline a { font-style: italic; color: var(--accent); }
+        .footer-col { margin-top: clamp(28px, 6vh, 64px); }
         .footer-col h4 {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--text-dim);
-            margin-bottom: 20px;
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.22em;
+            text-transform: uppercase; color: var(--accent);
+            padding-bottom: 16px; border-bottom: 1px solid var(--rule); margin-bottom: 16px;
         }
-
-        .footer-col a {
-            display: block;
-            font-size: 0.92rem;
-            margin-bottom: 12px;
-            color: var(--text);
-            transition: color 0.3s ease;
-        }
-
+        .footer-col a { display: block; padding: 6px 0; color: var(--ink-soft); font-size: 0.95rem; transition: color .3s ease; }
         .footer-col a:hover { color: var(--accent); }
-
+        @media (max-width: 820px) { .footer-grid { grid-template-columns: 1fr 1fr; } .footer-headline { grid-column: 1 / -1; margin-bottom: 24px; } }
         .footer-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 28px;
-            border-top: 1px solid var(--border);
-            font-size: 0.75rem;
-            color: var(--text-dim);
+            display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+            margin-top: clamp(60px, 10vh, 110px);
+            padding-top: 22px; border-top: 1px solid var(--rule);
+            font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim);
         }
 
-        /* ===== REVEAL ANIMATION ===== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(36px);
-            transition: opacity 0.7s ease, transform 0.7s ease;
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Fallback: if JS hasn't kicked in after 2s, show everything */
-        @keyframes revealFallback {
-            to { opacity: 1; transform: none; }
-        }
-        .reveal {
-            animation: revealFallback 0s 2s forwards;
-        }
-        .reveal.visible {
-            animation: none;
-        }
-
-        .reveal-d1 { transition-delay: 0.08s; }
-        .reveal-d2 { transition-delay: 0.16s; }
-        .reveal-d3 { transition-delay: 0.24s; }
-        .reveal-d4 { transition-delay: 0.32s; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            section { padding: 100px 32px; }
-            header { padding: 24px 32px; }
-            .hero { padding: 0 32px; }
-            .about-layout { grid-template-columns: 1fr; gap: 48px; }
-            .exp-item { grid-template-columns: 1fr; gap: 8px; }
-            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-            .gallery-three { grid-template-columns: repeat(2, 1fr); }
-            .gallery-cell.wide { grid-column: span 1; aspect-ratio: 1; }
-            .notebook-grid { grid-template-columns: 1fr; gap: 56px; }
-            .footer-top { grid-template-columns: 1fr; gap: 48px; }
-        }
-
-        @media (max-width: 640px) {
-            section { padding: 80px 20px; }
-            header { padding: 18px 20px; }
-            nav { gap: 20px; }
-            nav a { font-size: 0.7rem; }
-            .hero { padding: 0 20px; }
-            .hero-scroll-hint { left: 20px; bottom: 28px; }
-            .project-row { grid-template-columns: 1fr; gap: 8px; }
-            .proj-num { display: none; }
-            .proj-arrow { display: none; }
-            .gallery-three { grid-template-columns: 1fr; }
-            footer { padding: 64px 20px 32px; }
+        /* ===== REVEAL MOTION (restrained) ===== */
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1); }
+        .reveal.in { opacity: 1; transform: none; }
+        .d1 { transition-delay: .08s; } .d2 { transition-delay: .16s; } .d3 { transition-delay: .24s; }
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+            html { scroll-behavior: auto; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Cursor -->
-    <div class="cursor-ring"></div>
-    <div class="cursor-dot"></div>
-
-    <!-- Scroll Progress -->
-    <div class="progress"></div>
-
-    <!-- Grain overlay -->
-    <div class="grain"></div>
-
-    <!-- Header -->
-    <header>
-        <a href="#" class="logo-mark">VS.</a>
-        <nav>
+    <!-- ===== HEADER ===== -->
+    <header id="masthead">
+        <a href="#top" class="brand">Vedant Singh</a>
+        <nav class="desktop-nav">
             <a href="#about">About</a>
-            <a href="#honors">Honors</a>
-            <a href="#work">Work</a>
+            <a href="#honors">Recognition</a>
+            <a href="#work">Research</a>
             <a href="#projects">Projects</a>
-            <a href="#fun">Fun</a>
+            <a href="#fun">Beyond</a>
             <a href="#notebook">Notebook</a>
         </nav>
+        <button class="nav-toggle" aria-expanded="false" aria-controls="mobile-nav">Index</button>
     </header>
 
-    <!-- Hero -->
-    <section class="hero" id="top">
-        <div class="hero-badge">
-            <span class="dot"></span>
-            Stanford University &mdash; CS & Mathematics
+    <!-- ===== MOBILE MENU ===== -->
+    <nav class="mobile-nav" id="mobile-nav" aria-hidden="true">
+        <button class="m-close" aria-label="Close menu">Close</button>
+        <a href="#about"><span class="m-num onum">01</span> About</a>
+        <a href="#honors"><span class="m-num onum">02</span> Recognition</a>
+        <a href="#work"><span class="m-num onum">03</span> Research</a>
+        <a href="#projects"><span class="m-num onum">04</span> Projects</a>
+        <a href="#fun"><span class="m-num onum">05</span> Beyond</a>
+        <a href="#notebook"><span class="m-num onum">06</span> Notebook</a>
+    </nav>
+
+    <!-- ===== RUNNING FOLIO ===== -->
+    <div class="folio onum" aria-hidden="true">Vedant Singh — Portfolio · MMXXVI</div>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero wrap" id="top">
+        <div class="hero-meta reveal">
+            <span class="label">Stanford University — CS &amp; Mathematics</span>
+            <span class="label onum">Portfolio · MMXXVI</span>
         </div>
-        <h1 class="hero-heading">
-            <span class="line"><span class="line-inner">Vedant</span></span>
-            <span class="line"><span class="line-inner"><em>Singh</em><span class="accent">.</span></span></span>
-        </h1>
-        <p class="hero-sub">Currently building <a href="https://usesalus.ai" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Salus</a> (YC W26) &mdash; making AI agents reliable. Stanford CS & Math. Always exploring how technology can solve interesting problems.</p>
-        <div class="hero-scroll-hint">
-            <span class="scroll-track"></span>
-            Scroll to explore
+        <h1 class="display hero-h1 reveal d1">Vedant<br><em>Singh</em><span class="mark">.</span></h1>
+        <div class="hero-caption reveal d2">
+            <span class="label">Selected Work, Research &amp; Writing</span>
         </div>
+        <p class="hero-lede reveal d3">Currently building <a href="https://usesalus.ai" target="_blank" class="link">Salus</a> (YC&nbsp;W26) — making AI agents reliable. Stanford CS &amp; Math. Always exploring how technology can solve interesting problems.</p>
     </section>
 
-    <!-- Marquee -->
-    <div class="marquee-strip" aria-hidden="true">
-        <div class="marquee-track">
-            <span>Machine Learning</span>
-            <span class="filled">NLP</span>
-            <span>Brain-Computer Interfaces</span>
-            <span class="accent-fill">Linguistics</span>
-            <span>LLM Reasoning</span>
-            <span class="filled">Computer Vision</span>
-            <span class="accent-fill">Agent Reliability</span>
-            <span>Poker &amp; Strategy</span>
-            <span class="filled">Salus &mdash; YC W26</span>
-            <!-- duplicate for seamless loop -->
-            <span>Machine Learning</span>
-            <span class="filled">NLP</span>
-            <span>Brain-Computer Interfaces</span>
-            <span class="accent-fill">Linguistics</span>
-            <span>LLM Reasoning</span>
-            <span class="filled">Computer Vision</span>
-            <span class="accent-fill">Agent Reliability</span>
-            <span>Poker &amp; Strategy</span>
-            <span class="filled">Salus &mdash; YC W26</span>
+    <!-- ===== ABOUT ===== -->
+    <section class="plate wrap" id="about">
+        <div class="sec-head reveal">
+            <span class="sec-num">01</span>
+            <span class="label">About</span>
         </div>
-    </div>
-
-    <!-- About -->
-    <section id="about">
-        <div class="section-label reveal">01 &mdash; About</div>
-        <div class="about-layout">
-            <div class="about-img-wrap">
-                <img src="./images/IMG_0006.jpeg" alt="Vedant Singh" loading="eager">
-            </div>
+        <div class="about-grid">
+            <figure class="about-figure reveal">
+                <img src="./images/IMG_0006.jpeg" alt="Vedant Singh" loading="lazy">
+                <figcaption class="about-figcap label"><span class="onum">Fig. 1</span> — Vedant Singh, Stanford</figcaption>
+            </figure>
             <div class="about-body">
-                <h2 class="section-heading reveal">A bit <br>about me<span class="accent">.</span></h2>
-                <p class="reveal reveal-d1">I'm a junior at <strong>Stanford University</strong> studying <strong>Mathematics</strong> and <strong>Computer Science</strong>, drawn to the intersection of numbers, data, and computation. Currently building <a href="https://usesalus.ai" target="_blank"><strong>Salus</strong></a> (<strong>YC W26</strong>), a startup focused on agent reliability &mdash; making sure AI agents actually do what they're supposed to.</p>
-                <p class="reveal reveal-d2">My interests span <strong>artificial intelligence</strong>, <strong>natural language processing</strong>, <strong>computational linguistics</strong>, and <strong>financial technology</strong>. I had the honor of representing India at the <a href="https://ioling.org/results/2021/" target="_blank">International Linguistics Olympiad</a>, where I won a <strong>Bronze medal</strong>, and earned <strong>two Silver medals</strong> at the <strong>Asia Pacific Linguistics Olympiad</strong>, finishing <strong>first in India</strong> both times. I also earned recognition as a <a href="https://www.risefortheworld.org/winners/vedant-singh" target="_blank">Rise Global Winner</a> by Schmidt Futures for building a gamified app to preserve the Sanskrit language.</p>
-                <p class="reveal reveal-d3">Beyond academics, I'm involved in Stanford's tech community through <strong>ACM</strong> and the <strong>Blockchain Club</strong>, compete in <strong>ICPC</strong>, and help organize the <strong>Stanford Math Tournament</strong>.</p>
+                <h2 class="display sec-title reveal" style="margin-bottom:.6em">A bit <em>about</em> me.</h2>
+                <p class="reveal d1">I'm a junior at <strong>Stanford University</strong> studying <strong>Mathematics</strong> and <strong>Computer Science</strong>, drawn to the intersection of numbers, data, and computation. Currently building <a href="https://usesalus.ai" target="_blank" class="link">Salus</a> (<strong>YC&nbsp;W26</strong>), a startup focused on agent reliability — making sure AI agents actually do what they're supposed to.</p>
+                <p class="reveal d2">My interests span <strong>artificial intelligence</strong>, <strong>natural language processing</strong>, <strong>computational linguistics</strong>, and <strong>financial technology</strong>. I had the honor of representing India at the <a href="https://ioling.org/results/2021/" target="_blank" class="link">International Linguistics Olympiad</a>, where I won a <strong>Bronze medal</strong>, and earned <strong>two Silver medals</strong> at the <strong>Asia Pacific Linguistics Olympiad</strong>, finishing <strong>first in India</strong> both times. I was also recognized as a <a href="https://www.risefortheworld.org/winners/vedant-singh" target="_blank" class="link">Rise Global Winner</a> by Schmidt Futures for building a gamified app to preserve the Sanskrit language.</p>
+                <p class="reveal d3">Beyond academics, I'm involved in Stanford's tech community through <strong>ACM</strong> and the <strong>Blockchain Club</strong>, compete in <strong>ICPC</strong>, and help organize the <strong>Stanford Math Tournament</strong>.</p>
             </div>
         </div>
     </section>
 
-    <!-- Honors & Recognition -->
-    <section id="honors">
-        <div class="section-label reveal">02 &mdash; Honors</div>
-        <h2 class="section-heading reveal">Recognition<span class="accent">.</span></h2>
-
-        <div class="exp-list">
-            <div class="exp-item reveal">
-                <div class="exp-where">YC W26</div>
-                <div class="exp-what">
-                    <h3>Salus &mdash; Y Combinator Winter 2026</h3>
-                    <p>Building <a href="https://usesalus.ai" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Salus</a>, a startup focused on agent reliability &mdash; making AI agents do what they're actually supposed to.</p>
+    <!-- ===== RECOGNITION ===== -->
+    <section class="plate wrap" id="honors">
+        <div class="sec-head reveal">
+            <span class="sec-num">02</span>
+            <span class="label">Honors</span>
+        </div>
+        <h2 class="display sec-title reveal" style="margin-bottom:.7em">Recognition.</h2>
+        <div class="entries">
+            <div class="entry reveal">
+                <div class="entry-side">YC W26</div>
+                <div class="entry-main">
+                    <h3>Salus — Y Combinator Winter 2026</h3>
+                    <p>Building <a href="https://usesalus.ai" target="_blank" class="link">Salus</a>, a startup focused on agent reliability — making AI agents do what they're actually supposed to.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">IOL 2021</div>
-                <div class="exp-what">
-                    <h3>International Linguistics Olympiad &mdash; Bronze Medal</h3>
-                    <p>Represented India at the <a href="https://ioling.org/results/2021/" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">International Linguistics Olympiad</a> and won a bronze medal, competing against the world's best in solving problems from unfamiliar languages and writing systems.</p>
+            <div class="entry reveal">
+                <div class="entry-side">IOL 2021</div>
+                <div class="entry-main">
+                    <h3>International Linguistics Olympiad — Bronze Medal</h3>
+                    <p>Represented India at the <a href="https://ioling.org/results/2021/" target="_blank" class="link">International Linguistics Olympiad</a> and won a bronze medal, competing against the world's best in solving problems from unfamiliar languages and writing systems.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">APLO</div>
-                <div class="exp-what">
-                    <h3>Asia Pacific Linguistics Olympiad &mdash; 2 Silver Medals</h3>
-                    <p>Earned two silver medals at the <a href="https://aplo.asia/" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Asia Pacific Linguistics Olympiad</a> across multiple years of competition.</p>
+            <div class="entry reveal">
+                <div class="entry-side">APLO</div>
+                <div class="entry-main">
+                    <h3>Asia Pacific Linguistics Olympiad — Two Silver Medals</h3>
+                    <p>Earned two silver medals at the <a href="https://aplo.asia/" target="_blank" class="link">Asia Pacific Linguistics Olympiad</a> across multiple years of competition.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">RSI 2021</div>
-                <div class="exp-what">
+            <div class="entry reveal">
+                <div class="entry-side">RSI 2021</div>
+                <div class="entry-main">
                     <h3>Research Science Institute Scholar</h3>
-                    <p>Selected as an <a href="https://www.cee.org/programs/research-science-institute" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">RSI Scholar</a> at MIT, one of the most prestigious and selective STEM summer programs for high school students worldwide.</p>
+                    <p>Selected as an <a href="https://www.cee.org/programs/research-science-institute" target="_blank" class="link">RSI Scholar</a> at MIT, one of the most prestigious and selective STEM summer programs for high-school students worldwide.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">Schmidt Futures</div>
-                <div class="exp-what">
+            <div class="entry reveal">
+                <div class="entry-side">Schmidt Futures</div>
+                <div class="entry-main">
                     <h3>Rise Global Winner</h3>
-                    <p>Selected as a <a href="https://www.risefortheworld.org/winners/vedant-singh" target="_blank" style="color:var(--accent);text-decoration:underline;text-decoration-color:rgba(145,249,229,0.3);text-underline-offset:3px">Rise Global Winner</a> by Schmidt Futures for developing a gamified app to promote Sanskrit language preservation and facilitate easy learning.</p>
+                    <p>Selected as a <a href="https://www.risefortheworld.org/winners/vedant-singh" target="_blank" class="link">Rise Global Winner</a> by Schmidt Futures for developing a gamified app to promote Sanskrit language preservation and make it easy to learn.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Work / Research -->
-    <section id="work">
-        <div class="section-label reveal">03 &mdash; Research</div>
-        <h2 class="section-heading reveal">Where I've <br>worked<span class="accent">.</span></h2>
-
-        <div class="exp-list">
-            <a class="exp-item reveal" href="https://usesalus.ai" target="_blank">
-                <div class="exp-where">Salus &mdash; YC W26</div>
-                <div class="exp-what">
-                    <h3>Co-Founder &mdash; Agent Reliability</h3>
-                    <p>Building Salus, a YC W26 startup making AI agents reliable. Ensuring agents actually do what they're supposed to.</p>
+    <!-- ===== RESEARCH / WORK ===== -->
+    <section class="plate wrap" id="work">
+        <div class="sec-head reveal">
+            <span class="sec-num">03</span>
+            <span class="label">Research</span>
+        </div>
+        <h2 class="display sec-title reveal" style="margin-bottom:.7em">Where I've <em>worked</em>.</h2>
+        <div class="entries">
+            <a class="entry reveal" href="https://usesalus.ai" target="_blank">
+                <div class="entry-side">Salus — YC W26</div>
+                <div class="entry-main">
+                    <h3>Co-Founder — Agent Reliability</h3>
+                    <p>Building Salus, a YC W26 startup making AI agents reliable — ensuring agents actually do what they're supposed to.</p>
                 </div>
             </a>
-            <div class="exp-item reveal">
-                <div class="exp-where">Open Virtual<br>Assistant Lab</div>
-                <div class="exp-what">
+            <div class="entry reveal">
+                <div class="entry-side">Open Virtual Assistant Lab</div>
+                <div class="entry-main">
                     <h3>Long-Context Reasoning in LLMs</h3>
                     <p>Working on improving long-context reasoning capabilities in large language models. Current research focus.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">Legal Design Lab</div>
-                <div class="exp-what">
+            <div class="entry reveal">
+                <div class="entry-side">Legal Design Lab</div>
+                <div class="entry-main">
                     <h3>Legal AI Tools</h3>
                     <p>Building AI-powered tools to make legal processes more accessible and efficient.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">Stanford CS</div>
-                <div class="exp-what">
-                    <h3>Brain-Computer Interfaces & Reasoning LLMs</h3>
-                    <p>Worked on brain-computer interfaces and developing mathematically strong reasoning LLMs.</p>
+            <div class="entry reveal">
+                <div class="entry-side">Stanford CS</div>
+                <div class="entry-main">
+                    <h3>Brain–Computer Interfaces &amp; Reasoning LLMs</h3>
+                    <p>Worked on brain–computer interfaces and developing mathematically strong reasoning LLMs.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">King Center</div>
-                <div class="exp-what">
+            <div class="entry reveal">
+                <div class="entry-side">King Center</div>
+                <div class="entry-main">
                     <h3>Bias Detection in Historical Documents</h3>
                     <p>Applied NLP and computer vision to detect bias in historical documents.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">Stanford AFTLab</div>
-                <div class="exp-what">
+            <div class="entry reveal">
+                <div class="entry-side">Stanford AFTLab</div>
+                <div class="entry-main">
                     <h3>LLM-Based Credit Rating Models</h3>
                     <p>Built LLM-based credit rating models using financial filings and economic data.</p>
                 </div>
             </div>
-            <div class="exp-item reveal">
-                <div class="exp-where">MIT &mdash; RSI</div>
-                <div class="exp-what">
+            <div class="entry reveal">
+                <div class="entry-side">MIT — RSI</div>
+                <div class="entry-main">
                     <h3>Natural Language Translation Models</h3>
-                    <p>At MIT's Probabilistic Computing Project as part of the Research Science Institute, worked on natural language translation models.</p>
+                    <p>At MIT's Probabilistic Computing Project, as part of the Research Science Institute, worked on natural language translation models.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Projects -->
-    <section id="projects">
-        <div class="section-label reveal">04 &mdash; Projects</div>
-        <h2 class="section-heading reveal">Things I've <br>built<span class="accent">.</span></h2>
-
-        <div class="project-list">
-            <a class="project-row reveal" href="https://github.com/thevedants/CryptoAgents" target="_blank">
-                <span class="proj-num">01</span>
-                <div class="proj-info">
-                    <span class="proj-name">CryptoAgents</span>
-                    <span class="proj-desc">Multi-agent LLM system combining technical and sentiment analysis to drive cryptocurrency trading decisions.</span>
-                    <div class="proj-tags">
-                        <span class="proj-tag">LLMs</span>
-                        <span class="proj-tag">Multi-Agent</span>
-                        <span class="proj-tag">Finance</span>
-                    </div>
+    <!-- ===== PROJECTS ===== -->
+    <section class="plate wrap" id="projects">
+        <div class="sec-head reveal">
+            <span class="sec-num">04</span>
+            <span class="label">Projects</span>
+        </div>
+        <h2 class="display sec-title reveal" style="margin-bottom:.7em">Things I've <em>built</em>.</h2>
+        <div class="plates">
+            <a class="plate-row reveal" href="https://github.com/thevedants/CryptoAgents" target="_blank">
+                <span class="plate-num">01</span>
+                <div>
+                    <div class="plate-name">CryptoAgents</div>
+                    <p class="plate-desc">Multi-agent LLM system combining technical and sentiment analysis to drive cryptocurrency trading decisions.</p>
+                    <div class="plate-tags"><span>LLMs</span><span>Multi-Agent</span><span>Finance</span></div>
                 </div>
-                <span class="proj-arrow">&nearr;</span>
+                <span class="plate-arrow">↗</span>
             </a>
-            <a class="project-row reveal" href="https://github.com/thevedants/GalHero" target="_blank">
-                <span class="proj-num">02</span>
-                <div class="proj-info">
-                    <span class="proj-name">GalHero</span>
-                    <span class="proj-desc">Search through your photos using natural language. Semantic image search powered by vision-language models.</span>
-                    <div class="proj-tags">
-                        <span class="proj-tag">Computer Vision</span>
-                        <span class="proj-tag">NLP</span>
-                        <span class="proj-tag">Search</span>
-                    </div>
+            <a class="plate-row reveal" href="https://github.com/thevedants/GalHero" target="_blank">
+                <span class="plate-num">02</span>
+                <div>
+                    <div class="plate-name">GalHero</div>
+                    <p class="plate-desc">Search through your photos using natural language. Semantic image search powered by vision–language models.</p>
+                    <div class="plate-tags"><span>Computer Vision</span><span>NLP</span><span>Search</span></div>
                 </div>
-                <span class="proj-arrow">&nearr;</span>
+                <span class="plate-arrow">↗</span>
             </a>
-            <a class="project-row reveal" href="https://github.com/thevedants/OnCode" target="_blank">
-                <span class="proj-num">03</span>
-                <div class="proj-info">
-                    <span class="proj-name">OnCode</span>
-                    <span class="proj-desc">Your competitive programming assistant. Helps with problem analysis, solution generation, and optimization.</span>
-                    <div class="proj-tags">
-                        <span class="proj-tag">AI</span>
-                        <span class="proj-tag">Competitive Programming</span>
-                    </div>
+            <a class="plate-row reveal" href="https://github.com/thevedants/OnCode" target="_blank">
+                <span class="plate-num">03</span>
+                <div>
+                    <div class="plate-name">OnCode</div>
+                    <p class="plate-desc">Your competitive-programming assistant. Helps with problem analysis, solution generation, and optimization.</p>
+                    <div class="plate-tags"><span>AI</span><span>Competitive Programming</span></div>
                 </div>
-                <span class="proj-arrow">&nearr;</span>
+                <span class="plate-arrow">↗</span>
             </a>
-            <a class="project-row reveal" href="https://github.com/thevedants/Tennis" target="_blank">
-                <span class="proj-num">04</span>
-                <div class="proj-info">
-                    <span class="proj-name">Trader's Court</span>
-                    <span class="proj-desc">Predicts tennis match outcomes using deep learning and real-time data. Sports analytics meets AI.</span>
-                    <div class="proj-tags">
-                        <span class="proj-tag">Deep Learning</span>
-                        <span class="proj-tag">Sports Analytics</span>
-                    </div>
+            <a class="plate-row reveal" href="https://github.com/thevedants/Tennis" target="_blank">
+                <span class="plate-num">04</span>
+                <div>
+                    <div class="plate-name">Trader's Court</div>
+                    <p class="plate-desc">Predicts tennis match outcomes using deep learning and real-time data. Sports analytics meets AI.</p>
+                    <div class="plate-tags"><span>Deep Learning</span><span>Sports Analytics</span></div>
                 </div>
-                <span class="proj-arrow">&nearr;</span>
+                <span class="plate-arrow">↗</span>
             </a>
-            <a class="project-row reveal" href="https://github.com/thevedants" target="_blank">
-                <span class="proj-num">05</span>
-                <div class="proj-info">
-                    <span class="proj-name">PokerGenius</span>
-                    <span class="proj-desc">AI-powered poker strategy tool. Built after winning the Stanford-Berkeley Poker Tournament.</span>
-                    <div class="proj-tags">
-                        <span class="proj-tag">AI</span>
-                        <span class="proj-tag">Game Theory</span>
-                        <span class="proj-tag">Strategy</span>
-                    </div>
+            <a class="plate-row reveal" href="https://github.com/thevedants" target="_blank">
+                <span class="plate-num">05</span>
+                <div>
+                    <div class="plate-name">PokerGenius</div>
+                    <p class="plate-desc">AI-powered poker strategy tool. Built after winning the Stanford–Berkeley Poker Tournament.</p>
+                    <div class="plate-tags"><span>AI</span><span>Game Theory</span><span>Strategy</span></div>
                 </div>
-                <span class="proj-arrow">&nearr;</span>
+                <span class="plate-arrow">↗</span>
             </a>
-            <a class="project-row reveal" href="https://github.com/thevedants/Coolio" target="_blank">
-                <span class="proj-num">06</span>
-                <div class="proj-info">
-                    <span class="proj-name">Coolio</span>
-                    <span class="proj-desc">A cool utility project. Check out the repo for more.</span>
-                    <div class="proj-tags">
-                        <span class="proj-tag">Utility</span>
-                    </div>
+            <a class="plate-row reveal" href="https://github.com/thevedants/Coolio" target="_blank">
+                <span class="plate-num">06</span>
+                <div>
+                    <div class="plate-name">Coolio</div>
+                    <p class="plate-desc">A cool utility project. Check out the repo for more.</p>
+                    <div class="plate-tags"><span>Utility</span></div>
                 </div>
-                <span class="proj-arrow">&nearr;</span>
+                <span class="plate-arrow">↗</span>
             </a>
         </div>
     </section>
 
-    <!-- Fun -->
-    <section id="fun">
-        <div class="section-label reveal">05 &mdash; Beyond Code</div>
-
-        <h2 class="section-heading reveal">When I'm not <br>coding<span class="accent">.</span></h2>
-        <p class="fun-intro reveal">When I'm not working on AI or research, I'm usually reading, playing badminton, or deep in sports stats. I'm a big reader &mdash; from sci-fi to historical novels like <em>The Count of Monte Cristo</em>. I also love poker, and recently won the Stanford-Berkeley Poker Tournament. Inspired by the game's mix of math and strategy, I built PokerGenius. Always down for a game of heads up.</p>
-        <div class="gallery-grid gallery-three">
-            <div class="gallery-cell">
-                <img src="./images/IMG_2659.jpeg" alt="Vedant - Adventures" loading="eager">
-            </div>
-            <div class="gallery-cell">
-                <img src="./images/IMG_1718.jpeg" alt="Vedant - Work" loading="eager">
-            </div>
-            <div class="gallery-cell">
-                <img src="./images/IMG_2899.jpeg" alt="Vedant - Life" loading="eager">
-            </div>
+    <!-- ===== BEYOND CODE ===== -->
+    <section class="plate wrap" id="fun">
+        <div class="sec-head reveal">
+            <span class="sec-num">05</span>
+            <span class="label">Beyond Code</span>
+        </div>
+        <h2 class="display sec-title reveal" style="margin-bottom:.7em">When I'm not <em>coding</em>.</h2>
+        <p class="fun-intro reveal">When I'm not working on AI or research, I'm usually reading, playing badminton, or deep in sports stats. I'm a big reader — from sci-fi to historical novels like <em>The Count of Monte Cristo</em>. I also love poker, and recently won the Stanford–Berkeley Poker Tournament. Inspired by the game's mix of math and strategy, I built PokerGenius. Always down for a game of heads up.</p>
+        <div class="gallery">
+            <figure class="reveal"><img src="./images/IMG_2659.jpeg" alt="Vedant — adventures" loading="lazy"><figcaption class="label"><span class="onum">Fig. 2</span> — Adventures</figcaption></figure>
+            <figure class="reveal d1"><img src="./images/IMG_1718.jpeg" alt="Vedant — work" loading="lazy"><figcaption class="label"><span class="onum">Fig. 3</span> — At Work</figcaption></figure>
+            <figure class="reveal d2"><img src="./images/IMG_2899.jpeg" alt="Vedant — life" loading="lazy"><figcaption class="label"><span class="onum">Fig. 4</span> — Off the Clock</figcaption></figure>
         </div>
     </section>
 
-    <!-- Notebook -->
-    <section id="notebook">
-        <div class="section-label reveal">06 &mdash; Notebook</div>
-        <h2 class="section-heading reveal">What I'm reading <br>&amp; thinking<span class="accent">.</span></h2>
-
+    <!-- ===== NOTEBOOK ===== -->
+    <section class="plate wrap" id="notebook">
+        <div class="sec-head reveal">
+            <span class="sec-num">06</span>
+            <span class="label">Notebook</span>
+        </div>
+        <h2 class="display sec-title reveal" style="margin-bottom:.7em">What I'm reading <em>&amp; thinking</em>.</h2>
         <div class="notebook-grid">
-            <!-- Books & Shows -->
-            <div class="bookshelf">
-                <h3 class="notebook-sub reveal">Books</h3>
-                <div class="book-list">
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">The Stranger</span>
-                            <span class="book-author">Albert Camus</span>
-                            <span class="book-note">meursault gets cooked for not performing grief the way society expects. the sun made him do it is still the funniest defense ever</span>
-                        </div>
-                    </div>
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">The Trial</span>
-                            <span class="book-author">Franz Kafka</span>
-                            <span class="book-note">kafka wrote the most accurate depiction of dealing with any large institution. josef k would not survive the dmv</span>
-                        </div>
-                    </div>
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">Stoner</span>
-                            <span class="book-author">John Williams</span>
-                            <span class="book-note">nothing happens and yet everything happens. you finish it and just stare at the wall for 20 minutes</span>
-                        </div>
-                    </div>
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">The Road</span>
-                            <span class="book-author">Cormac McCarthy</span>
-                            <span class="book-note">the &ldquo;carrying the fire&rdquo; line lives in my head rent free. mccarthy proves you don&rsquo;t need adjectives to make someone cry</span>
-                        </div>
-                    </div>
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">The Bell Jar</span>
-                            <span class="book-author">Sylvia Plath</span>
-                            <span class="book-note">plath makes you feel the walls closing in through perfectly normal sentences. the fig tree passage alone is worth it</span>
-                        </div>
-                    </div>
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">Blood Meridian</span>
-                            <span class="book-author">Cormac McCarthy</span>
-                            <span class="book-note">i&rsquo;m not sure i understood all of it and i&rsquo;m not sure you&rsquo;re supposed to. the judge is the scariest character in all of literature</span>
-                        </div>
-                    </div>
+            <div>
+                <h3 class="nb-sub reveal">Books</h3>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">The Stranger</span><span class="book-author">Albert Camus</span></div>
+                    <p class="book-note">meursault gets cooked for not performing grief the way society expects. "the sun made him do it" is still the funniest defense ever.</p>
+                </div>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">The Trial</span><span class="book-author">Franz Kafka</span></div>
+                    <p class="book-note">kafka wrote the most accurate depiction of dealing with any large institution. josef k would not survive the DMV.</p>
+                </div>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">Stoner</span><span class="book-author">John Williams</span></div>
+                    <p class="book-note">nothing happens and yet everything happens. you finish it and just stare at the wall for 20 minutes.</p>
+                </div>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">The Road</span><span class="book-author">Cormac McCarthy</span></div>
+                    <p class="book-note">the "carrying the fire" line lives in my head rent free. mccarthy proves you don't need adjectives to make someone cry.</p>
+                </div>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">The Bell Jar</span><span class="book-author">Sylvia Plath</span></div>
+                    <p class="book-note">plath makes you feel the walls closing in through perfectly normal sentences. the fig-tree passage alone is worth it.</p>
+                </div>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">Blood Meridian</span><span class="book-author">Cormac McCarthy</span></div>
+                    <p class="book-note">i'm not sure i understood all of it and i'm not sure you're supposed to. the judge is the scariest character in all of literature.</p>
                 </div>
 
-                <h3 class="notebook-sub reveal" style="margin-top:48px">Shows</h3>
-                <div class="book-list">
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">Succession</span>
-                            <span class="book-note">you watch it for the plot and stay for the way these people weaponize dinner conversation. &ldquo;you can&rsquo;t do anything because you&rsquo;re nothing&rdquo; is peak writing</span>
-                        </div>
-                    </div>
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">The Sopranos</span>
-                            <span class="book-note">tony soprano is the reason every prestige show has a morally complex lead. also genuinely one of the funniest shows ever made</span>
-                        </div>
-                    </div>
-                    <div class="book-card reveal">
-                        <div class="book-spine"></div>
-                        <div class="book-info">
-                            <span class="book-title">The Office</span>
-                            <span class="book-note">i&rsquo;ve seen this show an embarrassing number of times. the jim and dwight dynamic carries civilization</span>
-                        </div>
-                    </div>
+                <h3 class="nb-sub reveal" style="margin-top:48px">Shows</h3>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">Succession</span></div>
+                    <p class="book-note">you watch it for the plot and stay for the way these people weaponize dinner conversation. "you can't do anything because you're nothing" is peak writing.</p>
+                </div>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">The Sopranos</span></div>
+                    <p class="book-note">tony soprano is the reason every prestige show has a morally complex lead. also genuinely one of the funniest shows ever made.</p>
+                </div>
+                <div class="book reveal">
+                    <div class="book-head"><span class="book-title">The Office</span></div>
+                    <p class="book-note">i've seen this show an embarrassing number of times. the jim-and-dwight dynamic carries civilization.</p>
                 </div>
             </div>
 
-            <!-- Thoughts -->
-            <div class="thoughts">
-                <h3 class="notebook-sub reveal">Thoughts</h3>
-                <div class="thought-list">
-                    <blockquote class="thought-card reveal">
-                        <p>&ldquo;no man ever steps in the same river twice, for it&rsquo;s not the same river and he&rsquo;s not the same man&rdquo;</p>
-                        <cite>Heraclitus</cite>
-                        <span class="thought-gloss">the most elegant way to say you&rsquo;re not who you were yesterday</span>
-                    </blockquote>
-                    <blockquote class="thought-card reveal">
-                        <p>&ldquo;in the midst of winter, i found there was, within me, an invincible summer&rdquo;</p>
-                        <cite>Camus</cite>
-                        <span class="thought-gloss">i think about this more than i should</span>
-                    </blockquote>
-                    <blockquote class="thought-card reveal">
-                        <p>&ldquo;since we&rsquo;re all going to die, it&rsquo;s obvious that when and how don&rsquo;t matter&rdquo;</p>
-                        <cite>Camus</cite>
-                        <span class="thought-gloss">weirdly the most freeing thing i&rsquo;ve ever read</span>
-                    </blockquote>
-                    <blockquote class="thought-card reveal">
-                        <p>&ldquo;the torment of precautions often exceeds the dangers to be avoided. it is sometimes better to abandon one&rsquo;s self to destiny&rdquo;</p>
-                        <cite>Napoleon</cite>
-                        <span class="thought-gloss">the most eloquent way to say stop overthinking</span>
-                    </blockquote>
-                    <blockquote class="thought-card reveal">
-                        <p>&ldquo;there are cathedrals everywhere for those with eyes to see&rdquo;</p>
-                        <cite>don&rsquo;t remember</cite>
-                        <span class="thought-gloss">heard it once and it never left. makes you pay attention to the ordinary</span>
-                    </blockquote>
-                    <blockquote class="thought-card reveal">
-                        <p>&ldquo;the harder i work, the luckier i get&rdquo;</p>
-                        <cite>don&rsquo;t remember</cite>
-                        <span class="thought-gloss">everyone says it. still hasn&rsquo;t been disproven</span>
-                    </blockquote>
-                    <blockquote class="thought-card reveal">
-                        <p>&ldquo;shoot for the moon, even if you miss you&rsquo;ll land among the stars&rdquo;</p>
-                        <cite>don&rsquo;t remember</cite>
-                        <span class="thought-gloss">corny? maybe. but it got me through more late nights than i&rsquo;d admit</span>
-                    </blockquote>
-                    <blockquote class="thought-card reveal">
-                        <p>running is the closest thing to meditation that actually works. mile 8 is where your brain finally shuts up</p>
-                        <cite>me</cite>
-                        <span class="thought-gloss">not a quote i found somewhere. just something i&rsquo;ve learned the hard way at 6am</span>
-                    </blockquote>
-                </div>
+            <div>
+                <h3 class="nb-sub reveal">Thoughts</h3>
+                <blockquote class="thought reveal">
+                    <p>"No man ever steps in the same river twice, for it's not the same river and he's not the same man."</p>
+                    <cite>Heraclitus</cite>
+                    <span class="gloss">the most elegant way to say you're not who you were yesterday.</span>
+                </blockquote>
+                <blockquote class="thought reveal">
+                    <p>"In the midst of winter, I found there was, within me, an invincible summer."</p>
+                    <cite>Camus</cite>
+                    <span class="gloss">i think about this more than i should.</span>
+                </blockquote>
+                <blockquote class="thought reveal">
+                    <p>"Since we're all going to die, it's obvious that when and how don't matter."</p>
+                    <cite>Camus</cite>
+                    <span class="gloss">weirdly the most freeing thing i've ever read.</span>
+                </blockquote>
+                <blockquote class="thought reveal">
+                    <p>"The torment of precautions often exceeds the dangers to be avoided. It is sometimes better to abandon one's self to destiny."</p>
+                    <cite>Napoleon</cite>
+                    <span class="gloss">the most eloquent way to say stop overthinking.</span>
+                </blockquote>
+                <blockquote class="thought reveal">
+                    <p>"There are cathedrals everywhere for those with eyes to see."</p>
+                    <cite>Unknown</cite>
+                    <span class="gloss">heard it once and it never left. makes you pay attention to the ordinary.</span>
+                </blockquote>
+                <blockquote class="thought reveal">
+                    <p>"The harder I work, the luckier I get."</p>
+                    <cite>Unknown</cite>
+                    <span class="gloss">everyone says it. still hasn't been disproven.</span>
+                </blockquote>
+                <blockquote class="thought reveal">
+                    <p>"Shoot for the moon — even if you miss, you'll land among the stars."</p>
+                    <cite>Unknown</cite>
+                    <span class="gloss">corny? maybe. but it got me through more late nights than i'd admit.</span>
+                </blockquote>
+                <blockquote class="thought reveal">
+                    <p>Running is the closest thing to meditation that actually works. Mile 8 is where your brain finally shuts up.</p>
+                    <cite>Me</cite>
+                    <span class="gloss">not a quote i found somewhere. just something i've learned the hard way at 6am.</span>
+                </blockquote>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-top">
-            <div class="footer-headline reveal">
-                Let's build something<br>
-                <a href="mailto:vedants@stanford.edu">together.</a>
-            </div>
-            <div class="footer-col reveal reveal-d1">
+    <!-- ===== FOOTER ===== -->
+    <footer class="wrap">
+        <div class="footer-grid">
+            <div class="footer-headline reveal">Let's build something <a href="mailto:vedants@stanford.edu">together.</a></div>
+            <div class="footer-col reveal d1">
                 <h4>Connect</h4>
-                <a href="mailto:vedants@stanford.edu" target="_blank">Email</a>
+                <a href="mailto:vedants@stanford.edu">Email</a>
                 <a href="https://www.linkedin.com/in/thevedantsingh/" target="_blank">LinkedIn</a>
                 <a href="https://github.com/thevedants" target="_blank">GitHub</a>
                 <a href="https://x.com/thevedants1" target="_blank">X / Twitter</a>
             </div>
-            <div class="footer-col reveal reveal-d2">
+            <div class="footer-col reveal d2">
                 <h4>Navigate</h4>
                 <a href="#top">Top</a>
                 <a href="#about">About</a>
-                <a href="#honors">Honors</a>
+                <a href="#honors">Recognition</a>
                 <a href="#work">Research</a>
                 <a href="#projects">Projects</a>
-                <a href="#fun">Fun</a>
                 <a href="#notebook">Notebook</a>
             </div>
         </div>
         <div class="footer-bar">
-            <span>&copy; 2026 Vedant Singh</span>
+            <span class="onum">© 2026 Vedant Singh</span>
+            <span>Set in Cormorant Garamond &amp; Hanken Grotesk</span>
             <span>Made with curiosity</span>
         </div>
     </footer>
 
-    <!-- ===== SCRIPTS ===== -->
     <script>
-    (function() {
+    (function () {
         'use strict';
 
-        /* --- Custom Cursor --- */
-        const ring = document.querySelector('.cursor-ring');
-        const dot = document.querySelector('.cursor-dot');
-        let mx = 0, my = 0, rx = 0, ry = 0;
+        // header hairline on scroll
+        var head = document.getElementById('masthead');
+        var onScroll = function () { head.classList.toggle('scrolled', window.scrollY > 20); };
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
 
-        if (window.matchMedia('(pointer: fine)').matches && ring && dot) {
-            document.addEventListener('mousemove', e => {
-                mx = e.clientX;
-                my = e.clientY;
-                dot.style.left = mx + 'px';
-                dot.style.top = my + 'px';
-            });
+        // mobile menu toggle
+        var toggle = document.querySelector('.nav-toggle');
+        var menu = document.getElementById('mobile-nav');
+        var closeBtn = document.querySelector('.m-close');
+        var setMenu = function (open) {
+            document.body.classList.toggle('nav-open', open);
+            if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (menu) menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+        };
+        if (toggle) toggle.addEventListener('click', function () { setMenu(true); });
+        if (closeBtn) closeBtn.addEventListener('click', function () { setMenu(false); });
+        if (menu) menu.querySelectorAll('a').forEach(function (a) {
+            a.addEventListener('click', function () { setMenu(false); });
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setMenu(false);
+        });
 
-            (function animate() {
-                rx += (mx - rx) * 0.15;
-                ry += (my - ry) * 0.15;
-                ring.style.left = rx + 'px';
-                ring.style.top = ry + 'px';
-                requestAnimationFrame(animate);
-            })();
-
-            document.querySelectorAll('a, button, .stat-card, .gallery-cell, .exp-item').forEach(el => {
-                el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
-                el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
-            });
+        // scrollspy — highlight the current section in nav + menu
+        var navLinks = document.querySelectorAll('.desktop-nav a, .mobile-nav a');
+        var sections = document.querySelectorAll('section[id]');
+        if ('IntersectionObserver' in window && navLinks.length) {
+            var spy = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (!e.isIntersecting) return;
+                    var id = e.target.getAttribute('id');
+                    navLinks.forEach(function (a) {
+                        a.classList.toggle('is-current', a.getAttribute('href') === '#' + id);
+                    });
+                });
+            }, { rootMargin: '-45% 0px -50% 0px' });
+            sections.forEach(function (s) { spy.observe(s); });
         }
 
-        /* --- Scroll Progress --- */
-        const progressBar = document.querySelector('.progress');
-        window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            const total = document.documentElement.scrollHeight - window.innerHeight;
-            if (total > 0) {
-                progressBar.style.width = (scrolled / total * 100) + '%';
-            }
-        }, { passive: true });
-
-        /* --- Reveal on Scroll --- */
-        const reveals = document.querySelectorAll('.reveal');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
+        // restrained reveal-on-scroll
+        var els = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) {
+            els.forEach(function (el) { el.classList.add('in'); });
+            return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
             });
-        }, {
-            threshold: 0.12,
-            rootMargin: '0px 0px -40px 0px'
-        });
-
-        reveals.forEach(el => observer.observe(el));
-
-        /* --- Smooth anchor scrolling --- */
-        document.querySelectorAll('a[href^="#"]').forEach(link => {
-            link.addEventListener('click', e => {
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-
-        /* --- Parallax on hero elements (subtle) --- */
-        const heroHeading = document.querySelector('.hero-heading');
-        const heroSub = document.querySelector('.hero-sub');
-        window.addEventListener('scroll', () => {
-            const y = window.scrollY;
-            if (y < window.innerHeight) {
-                const ratio = y / window.innerHeight;
-                heroHeading.style.transform = `translateY(${y * 0.25}px)`;
-                heroHeading.style.opacity = 1 - ratio * 1.2;
-                heroSub.style.opacity = Math.max(0, 1 - ratio * 1.5);
-            }
-        }, { passive: true });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+        els.forEach(function (el) { io.observe(el); });
     })();
     </script>
-
 </body>
 </html>
